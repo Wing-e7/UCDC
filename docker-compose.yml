@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ucdc
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  consent_service:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
+      JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
+      UCDC_ENV: ${UCDC_ENV:-dev}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    command: ["uvicorn", "ucdc.consent_api:app", "--host", "0.0.0.0", "--port", "8001"]
+    ports:
+      - "8001:8001"
+
+  orchestrator_service:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
+      JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
+      UCDC_ENV: ${UCDC_ENV:-dev}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    command: ["uvicorn", "ucdc.orchestrator_api:app", "--host", "0.0.0.0", "--port", "8002"]
+    ports:
+      - "8002:8002"
+
+  agent_adapter_service:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
+      JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
+      UCDC_ENV: ${UCDC_ENV:-dev}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    command: ["uvicorn", "ucdc.agent_adapter_api:app", "--host", "0.0.0.0", "--port", "8003"]
+    ports:
+      - "8003:8003"
+
+volumes:
+  postgres_data:
+
