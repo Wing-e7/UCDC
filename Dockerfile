@@ -8,6 +8,8 @@ ENV PYTHONPATH=/app/src
 COPY requirements.txt /app/requirements.txt
 RUN python -m pip install --no-cache-dir -r /app/requirements.txt
 
+COPY alembic.ini /app/alembic.ini
+COPY alembic /app/alembic
 COPY src /app/src
 
 EXPOSE 8001 8002 8003

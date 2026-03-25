@@ -5,7 +5,12 @@ from ucdc.consent_api import app as consent_app
 from ucdc.orchestrator_api import app as orchestrator_app
 
 
-def test_consent_to_job_happy_path():
+def test_consent_to_job_happy_path(monkeypatch):
+    def _fake_execute(base_url, consent_token, job_id, job_manifest, timeout_seconds=30.0):
+        return {"job_id": job_id, "status": "completed", "result": {}}
+
+    monkeypatch.setattr("ucdc.orchestrator_api.call_adapter_execute", _fake_execute)
+
     with (
         TestClient(consent_app) as consent_client,
         TestClient(orchestrator_app) as orchestrator_client,
@@ -40,7 +45,7 @@ def test_consent_to_job_happy_path():
         )
         assert job_resp.status_code == 200, job_resp.text
         job_body = job_resp.json()
-        assert job_body["status"] == "scheduled"
+        assert job_body["status"] == "completed"
         assert isinstance(job_body["job_id"], str)
 
         # Revoke consent and ensure scheduling fails.

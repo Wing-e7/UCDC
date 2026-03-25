@@ -30,6 +30,14 @@ class Settings(BaseSettings):
     )
     # "dev" | "test" allow placeholder JWT; "production" requires a non-default JWT_SECRET.
     ucdc_env: str = Field(default="dev", validation_alias="UCDC_ENV")
+    agent_adapter_base_url: str = Field(
+        default="http://127.0.0.1:8003",
+        validation_alias="AGENT_ADAPTER_BASE_URL",
+    )
+    agent_adapter_timeout_seconds: float = Field(
+        default=30.0,
+        validation_alias="AGENT_ADAPTER_TIMEOUT_SECONDS",
+    )
 
 
 @lru_cache(maxsize=1)

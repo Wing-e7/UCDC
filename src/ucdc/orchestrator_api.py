@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
@@ -9,6 +10,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from .adapter_client import call_adapter_execute
 from .audit import write_audit_event
 from .config import get_settings, validate_settings_for_startup
 from .consent_hash import compute_consent_hash
@@ -16,7 +18,7 @@ from .db import get_db, init_db
 from .jwt_utils import decode_consent_token
 from .logging_middleware import RequestLoggingMiddleware
 from .models import AuditEvent, Consent, Job
-from .schemas import AuditEventOut, JobCancelResponse, JobDetail, JobRequest, JobResponse
+from .schemas import AuditEventOut, JobCancelResponse, JobDetail, JobManifest, JobRequest, JobResponse
 
 logger = logging.getLogger("ucdc")
 
@@ -106,7 +108,81 @@ def schedule_job(req: JobRequest, db: Session = Depends(get_db)):
     )
 
     logger.info("job_scheduled", extra={"job_id": job.id, "consent_id": consent_id})
+
+    # Tests / dry-run: skip HTTP to adapter and leave job `scheduled` (e.g. cancel tests).
+    if os.getenv("UCDC_SKIP_ADAPTER_INTEGRATION") == "1":
+        return JobResponse(job_id=job.id, status=job.status)
+
+    req_token = req.consent_token
+    _run_adapter_and_finalize(db, job, consent_id, req_token, manifest)
+    db.refresh(job)
     return JobResponse(job_id=job.id, status=job.status)
+
+
+def _run_adapter_and_finalize(
+    db: Session,
+    job: Job,
+    consent_id: str,
+    consent_token: str,
+    manifest: JobManifest,
+) -> None:
+    settings = get_settings()
+    now = datetime.now(timezone.utc)
+    job.status = "running"
+    job.started_at = now
+    job.updated_at = now
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    write_audit_event(
+        db,
+        event_type="job.running",
+        consent_id=consent_id,
+        job_id=job.id,
+        details={},
+    )
+
+    try:
+        call_adapter_execute(
+            settings.agent_adapter_base_url,
+            consent_token,
+            job.id,
+            manifest.model_dump(),
+            timeout_seconds=settings.agent_adapter_timeout_seconds,
+        )
+    except Exception as e:
+        fin = datetime.now(timezone.utc)
+        job.status = "failed"
+        job.last_error = str(e)[:8000]
+        job.finished_at = fin
+        job.updated_at = fin
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+        write_audit_event(
+            db,
+            event_type="job.failed",
+            consent_id=consent_id,
+            job_id=job.id,
+            details={"error": str(e)},
+        )
+        return
+
+    fin = datetime.now(timezone.utc)
+    job.status = "completed"
+    job.finished_at = fin
+    job.updated_at = fin
+    job.last_error = None
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    write_audit_event(
+        db,
+        event_type="job.completed",
+        consent_id=consent_id,
+        job_id=job.id,
+        details={},
+    )
 
 
 @app.get("/jobs/{job_id}", response_model=JobDetail)

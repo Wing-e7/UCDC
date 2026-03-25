@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Generator
 
 from sqlalchemy import create_engine
@@ -28,7 +29,20 @@ def get_sessionmaker():
 
 
 def init_db() -> None:
-    Base.metadata.create_all(bind=get_engine())
+    settings = get_settings()
+    url = settings.database_url
+    if url.startswith("sqlite"):
+        Base.metadata.create_all(bind=get_engine())
+        return
+
+    from alembic import command
+    from alembic.config import Config
+
+    root = Path(__file__).resolve().parents[2]
+    alembic_ini = root / "alembic.ini"
+    cfg = Config(str(alembic_ini))
+    cfg.set_main_option("sqlalchemy.url", url)
+    command.upgrade(cfg, "head")
 
 
 def get_db() -> Generator[Session, None, None]:

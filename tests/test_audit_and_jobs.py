@@ -4,7 +4,10 @@ from ucdc.consent_api import app as consent_app
 from ucdc.orchestrator_api import app as orchestrator_app
 
 
-def test_consent_events_and_job_events_include_scheduled_and_cancel():
+def test_consent_events_and_job_events_include_scheduled_and_cancel(monkeypatch):
+    # Leave job in `scheduled` so we can cancel (orchestrator skips adapter HTTP).
+    monkeypatch.setenv("UCDC_SKIP_ADAPTER_INTEGRATION", "1")
+
     with TestClient(consent_app) as consent_client, TestClient(orchestrator_app) as orchestrator_client:
         consent_resp = consent_client.post(
             "/consents",

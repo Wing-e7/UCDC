@@ -20,6 +20,20 @@ Service URLs:
 - Orchestrator: `http://localhost:8002`
 - Agent Adapter: `http://localhost:8003`
 
+The orchestrator calls the agent adapter **`POST /execute`** after scheduling a job (`AGENT_ADAPTER_BASE_URL`, default in Compose: `http://agent_adapter_service:8003`). Jobs transition **`scheduled` → `running` → `completed`** or **`failed`** (with audit events).
+
+### Postgres migrations (Alembic)
+
+On **Postgres**, services run **`alembic upgrade head`** on startup (see `src/ucdc/db.py`). Tests still use **SQLite** + `create_all()`.
+
+Manual upgrade (local):
+
+```bash
+export DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/ucdc
+export PYTHONPATH=src
+alembic upgrade head
+```
+
 ## Quick smoke test
 
 1. Issue consent:

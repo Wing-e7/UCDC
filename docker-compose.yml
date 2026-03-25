@@ -9,11 +9,17 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
 
   consent_service:
     build: .
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
       JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
@@ -26,12 +32,16 @@ services:
   orchestrator_service:
     build: .
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      agent_adapter_service:
+        condition: service_started
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
       JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
       UCDC_ENV: ${UCDC_ENV:-dev}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      AGENT_ADAPTER_BASE_URL: ${AGENT_ADAPTER_BASE_URL:-http://agent_adapter_service:8003}
     command: ["uvicorn", "ucdc.orchestrator_api:app", "--host", "0.0.0.0", "--port", "8002"]
     ports:
       - "8002:8002"
@@ -39,7 +49,8 @@ services:
   agent_adapter_service:
     build: .
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
       JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
