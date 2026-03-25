@@ -14,3 +14,6 @@ vendor/
 dist/
 build/
 .DS_Store
+
+# Local Cursor IDE settings (keep .cursor/agents and skills versioned if desired)
+.cursor/settings.json

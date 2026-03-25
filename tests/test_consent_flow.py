@@ -9,7 +9,7 @@ def test_consent_to_job_happy_path(monkeypatch):
     def _fake_execute(base_url, consent_token, job_id, job_manifest, timeout_seconds=30.0):
         return {"job_id": job_id, "status": "completed", "result": {}}
 
-    monkeypatch.setattr("ucdc.orchestrator_api.call_adapter_execute", _fake_execute)
+    monkeypatch.setattr("ucdc.job_execution.call_adapter_execute", _fake_execute)
 
     with (
         TestClient(consent_app) as consent_client,

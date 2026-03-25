@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 
 from .audit import write_audit_event
 from .config import get_settings, validate_settings_for_startup
-from .consent_hash import compute_consent_hash
+from .cors_setup import add_cors
+from .consent_hash import consent_hash_from_job_manifest
 from .db import get_db, init_db
 from .jwt_utils import decode_consent_token
 from .logging_middleware import RequestLoggingMiddleware
@@ -38,6 +39,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="UCDC Agent Adapter (Example)", version="0.1", lifespan=lifespan)
 app.add_middleware(RequestLoggingMiddleware)
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+add_cors(app)
 
 @app.get("/health")
 def health():
@@ -70,7 +72,7 @@ def execute(req: ExecuteRequest, db: Session = Depends(get_db)):
     if manifest.agent_id != token_agent_id:
         raise HTTPException(status_code=403, detail="Agent ID mismatch with consent")
 
-    job_hash = compute_consent_hash(user_id=user_id, agent_id=manifest.agent_id, resources=manifest.resources)
+    job_hash = consent_hash_from_job_manifest(user_id=user_id, manifest=manifest)
     if job_hash != token_consent_hash:
         raise HTTPException(status_code=403, detail="Resources/manifest mismatch with consent")
 

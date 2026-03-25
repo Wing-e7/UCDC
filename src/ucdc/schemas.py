@@ -3,7 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class ResourceSpec(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    compute_class: Optional[str] = Field(default=None, description="e.g. standard, cpu_heavy, gpu")
+    max_runtime_seconds: Optional[int] = Field(default=None, ge=1)
+    capability_tags: List[str] = Field(default_factory=list)
 
 
 class ConsentRequest(BaseModel):
@@ -12,6 +20,8 @@ class ConsentRequest(BaseModel):
     resources: List[str] = Field(default_factory=list)
     explanation: str
     ttl_seconds: int = Field(default=3600, ge=60, le=60 * 60 * 24 * 30)
+    manifest_version: int = Field(default=1, ge=1, le=100)
+    resource_spec: Optional[ResourceSpec] = None
 
 
 class ConsentResponse(BaseModel):
@@ -25,6 +35,8 @@ class ConsentMetadata(BaseModel):
     user_id: str
     agent_id: str
     resources: List[str]
+    manifest_version: int
+    resource_spec: Dict[str, Any]
     explanation: Optional[str]
     issued_at: datetime
     expires_at: datetime
@@ -40,6 +52,8 @@ class JobManifest(BaseModel):
     agent_id: str
     resources: List[str] = Field(default_factory=list)
     data: Dict[str, Any] = Field(default_factory=dict)
+    manifest_version: int = Field(default=1, ge=1, le=100)
+    resource_spec: Optional[ResourceSpec] = None
 
 
 class JobRequest(BaseModel):
@@ -96,4 +110,3 @@ class ExecuteResponse(BaseModel):
     job_id: str
     status: str
     result: Dict[str, Any]
-

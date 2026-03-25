@@ -34,6 +34,8 @@ def init_db() -> None:
     if url.startswith("sqlite"):
         Base.metadata.create_all(bind=get_engine())
         return
+    if not settings.run_db_migrations:
+        return
 
     from alembic import command
     from alembic.config import Config

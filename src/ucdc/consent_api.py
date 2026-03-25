@@ -4,15 +4,18 @@ import logging
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .audit import write_audit_event
 from .config import get_settings, validate_settings_for_startup
-from .consent_hash import compute_consent_hash
+from .cors_setup import add_cors
+from .consent_hash import compute_consent_hash, resource_spec_dict_from_model
 from .db import get_db, init_db
 from .jwt_utils import encode_consent_token
 from .logging_middleware import RequestLoggingMiddleware
@@ -46,6 +49,11 @@ app = FastAPI(title="UCDC Consent Service", version="0.1", lifespan=lifespan)
 app.add_middleware(RequestLoggingMiddleware)
 
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+add_cors(app)
+
+_WEB_DIR = Path(__file__).resolve().parents[2] / "web"
+if _WEB_DIR.is_dir():
+    app.mount("/ui", StaticFiles(directory=str(_WEB_DIR), html=True), name="ui")
 
 
 @app.get("/health")
@@ -68,13 +76,22 @@ def issue_consent(req: ConsentRequest, db: Session = Depends(get_db)):
     expires_at = now + timedelta(seconds=req.ttl_seconds)
 
     consent_id = str(uuid.uuid4())
-    consent_hash = compute_consent_hash(user_id=req.user_id, agent_id=req.agent_id, resources=req.resources)
+    spec_dict = resource_spec_dict_from_model(req.resource_spec)
+    consent_hash = compute_consent_hash(
+        user_id=req.user_id,
+        agent_id=req.agent_id,
+        resources=req.resources,
+        manifest_version=req.manifest_version,
+        resource_spec=spec_dict if spec_dict else None,
+    )
 
     consent = Consent(
         id=consent_id,
         user_id=req.user_id,
         agent_id=req.agent_id,
         resources=req.resources,
+        manifest_version=req.manifest_version,
+        resource_spec=spec_dict,
         explanation=req.explanation,
         consent_hash=consent_hash,
         issued_at=now,
@@ -100,6 +117,8 @@ def issue_consent(req: ConsentRequest, db: Session = Depends(get_db)):
             "user_id": consent.user_id,
             "agent_id": consent.agent_id,
             "resources": list(consent.resources or []),
+            "manifest_version": consent.manifest_version,
+            "resource_spec": dict(consent.resource_spec or {}),
             "ttl_seconds": req.ttl_seconds,
         },
     )
@@ -117,6 +136,8 @@ def get_consent(consent_id: str, db: Session = Depends(get_db)):
         user_id=consent.user_id,
         agent_id=consent.agent_id,
         resources=list(consent.resources or []),
+        manifest_version=int(consent.manifest_version),
+        resource_spec=dict(consent.resource_spec or {}),
         explanation=consent.explanation,
         issued_at=consent.issued_at,
         expires_at=consent.expires_at,

@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -17,4 +18,23 @@ os.environ.setdefault("JWT_SECRET", "test-secret-test-secret-test-secret")
 os.environ.setdefault("CONSENT_ISSUER", "ucdc-test")
 os.environ.setdefault("LOG_LEVEL", "WARNING")
 os.environ.setdefault("UCDC_ENV", "test")
+# Host/CI env must not leak async mode into tests that expect sync 200 responses.
+os.environ["UCDC_ASYNC_JOBS"] = "false"
+
+
+@pytest.fixture(autouse=True)
+def _reset_ucdc_settings_cache():
+    try:
+        from ucdc.config import get_settings
+
+        get_settings.cache_clear()
+    except ImportError:
+        pass
+    yield
+    try:
+        from ucdc.config import get_settings
+
+        get_settings.cache_clear()
+    except ImportError:
+        pass
 

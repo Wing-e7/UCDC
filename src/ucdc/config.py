@@ -38,11 +38,27 @@ class Settings(BaseSettings):
         default=30.0,
         validation_alias="AGENT_ADAPTER_TIMEOUT_SECONDS",
     )
+    # Comma-separated origins for browser demos (e.g. http://localhost:8001). Use "*" for dev only.
+    cors_origins: str = Field(default="*", validation_alias="CORS_ORIGINS")
+    # Run Alembic on startup. Keep enabled for one service only in Compose.
+    run_db_migrations: bool = Field(default=True, validation_alias="RUN_DB_MIGRATIONS")
+    # When true, POST /jobs returns 202 and a worker drains `queued` jobs (see job_worker).
+    ucdc_async_jobs: bool = Field(default=False, validation_alias="UCDC_ASYNC_JOBS")
+    # Used when no row exists in agent_entitlements for (user_id, agent_id).
+    default_max_concurrent_jobs: int = Field(default=10, ge=1, validation_alias="UCDC_DEFAULT_MAX_CONCURRENT_JOBS")
+    worker_poll_seconds: float = Field(default=1.0, ge=0.1, validation_alias="UCDC_WORKER_POLL_SECONDS")
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     return Settings()
+
+
+def cors_allow_origins() -> list[str]:
+    raw = (get_settings().cors_origins or "").strip()
+    if raw == "*" or not raw:
+        return ["*"]
+    return [p.strip() for p in raw.split(",") if p.strip()]
 
 
 def validate_settings_for_startup() -> None:

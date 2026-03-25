@@ -25,6 +25,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
       UCDC_ENV: ${UCDC_ENV:-dev}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      RUN_DB_MIGRATIONS: "true"
     command: ["uvicorn", "ucdc.consent_api:app", "--host", "0.0.0.0", "--port", "8001"]
     ports:
       - "8001:8001"
@@ -34,6 +35,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      consent_service:
+        condition: service_started
       agent_adapter_service:
         condition: service_started
     environment:
@@ -42,6 +45,8 @@ services:
       UCDC_ENV: ${UCDC_ENV:-dev}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       AGENT_ADAPTER_BASE_URL: ${AGENT_ADAPTER_BASE_URL:-http://agent_adapter_service:8003}
+      UCDC_ASYNC_JOBS: ${UCDC_ASYNC_JOBS:-false}
+      RUN_DB_MIGRATIONS: "false"
     command: ["uvicorn", "ucdc.orchestrator_api:app", "--host", "0.0.0.0", "--port", "8002"]
     ports:
       - "8002:8002"
@@ -51,14 +56,39 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      consent_service:
+        condition: service_started
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
       JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
       UCDC_ENV: ${UCDC_ENV:-dev}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      RUN_DB_MIGRATIONS: "false"
     command: ["uvicorn", "ucdc.agent_adapter_api:app", "--host", "0.0.0.0", "--port", "8003"]
     ports:
       - "8003:8003"
+
+  job_worker_service:
+    build: .
+    profiles:
+      - async
+    depends_on:
+      postgres:
+        condition: service_healthy
+      consent_service:
+        condition: service_started
+      agent_adapter_service:
+        condition: service_started
+      orchestrator_service:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/ucdc
+      JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
+      UCDC_ENV: ${UCDC_ENV:-dev}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      AGENT_ADAPTER_BASE_URL: ${AGENT_ADAPTER_BASE_URL:-http://agent_adapter_service:8003}
+      RUN_DB_MIGRATIONS: "false"
+    command: ["python", "-m", "ucdc.job_worker"]
 
 volumes:
   postgres_data:

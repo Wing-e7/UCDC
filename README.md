@@ -20,7 +20,17 @@ Service URLs:
 - Orchestrator: `http://localhost:8002`
 - Agent Adapter: `http://localhost:8003`
 
-The orchestrator calls the agent adapter **`POST /execute`** after scheduling a job (`AGENT_ADAPTER_BASE_URL`, default in Compose: `http://agent_adapter_service:8003`). Jobs transition **`scheduled` → `running` → `completed`** or **`failed`** (with audit events).
+**End-user style demo (browser):** open **`http://localhost:8001/ui/`** after services are up. It issues consent, schedules a job, and revokes (set orchestrator URL if not default). See `docs/onboarding-flow.md` for the flow and copy notes. CORS defaults to `*` in dev (`CORS_ORIGINS`).
+
+The orchestrator calls the agent adapter **`POST /execute`** after scheduling a job (`AGENT_ADAPTER_BASE_URL`, default in Compose: `http://agent_adapter_service:8003`).
+
+**Sync mode (default):** `POST /jobs` returns **200**; jobs go **`scheduled` → `running` → `completed`/`failed`** with audit events.
+
+**Async mode:** set **`UCDC_ASYNC_JOBS=true`** on the orchestrator (`UCDC_ASYNC_JOBS` in Compose). `POST /jobs` returns **202** and jobs are **`queued`** until a worker drains them. Run **`python -m ucdc.job_worker`** (same `DATABASE_URL` / JWT / adapter URL as orchestrator), or use Compose **`--profile async`** to start `job_worker_service`.
+
+**Manifest v2:** consent and `job_manifest` may include **`manifest_version`** (default `1`) and **`resource_spec`** (`compute_class`, `max_runtime_seconds`, `capability_tags`). They are included in the consent hash whenever the spec is non-empty or `manifest_version > 1` (legacy tokens stay stable for `manifest_version:1` with an empty spec).
+
+**Entitlements:** optional table **`agent_entitlements`** (`user_id`, `agent_id`, `max_concurrent_jobs`). If no row exists, **`UCDC_DEFAULT_MAX_CONCURRENT_JOBS`** applies (default `10`). Enforced at **enqueue** (HTTP 429) and **re-checked at dequeue** (`job.admission_denied` if failed).
 
 ### Postgres migrations (Alembic)
 
