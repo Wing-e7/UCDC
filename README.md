@@ -17,6 +17,10 @@ docker compose up --build
 
 Compose reads `.env` for `${JWT_SECRET}` / `${UCDC_ENV}` substitution (defaults are dev-friendly).
 
+## Distribution (Windows + macOS)
+
+For one-line installer commands (admin/sudo), checksums, rollback policy, and channel packaging copy, see `docs/distribution.md`.
+
 Service URLs:
 - Consent Service: `http://localhost:8001`
 - Orchestrator: `http://localhost:8002`

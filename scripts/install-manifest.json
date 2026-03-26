@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "channel": "stable",
+  "updated_at_utc": "2026-03-26T00:00:00Z",
+  "scripts": {
+    "macos": {
+      "stable_url": "https://downloads.example.com/ucdc/stable/install-macos.sh",
+      "beta_url": "https://downloads.example.com/ucdc/beta/install-macos.sh",
+      "sha256": "REPLACE_WITH_SHA256"
+    },
+    "windows": {
+      "stable_url": "https://downloads.example.com/ucdc/stable/install-windows.ps1",
+      "beta_url": "https://downloads.example.com/ucdc/beta/install-windows.ps1",
+      "sha256": "REPLACE_WITH_SHA256"
+    }
+  },
+  "rollback": {
+    "stable_pointer": "https://downloads.example.com/ucdc/stable/",
+    "prior_version": "0.0.9"
+  }
+}
