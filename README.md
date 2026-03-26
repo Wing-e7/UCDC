@@ -5,6 +5,8 @@ This repo contains the initial skeleton for:
 - Orchestrator (validate consent and schedule jobs)
 - Example Agent Adapter (capabilities + stub execution)
 
+For active product direction, scope boundaries, and subagent guardrails, read `project-context.md` first.
+
 ## Run with Docker (Postgres)
 
 Optional: copy `cp .env.example .env` and set `JWT_SECRET` (required for `UCDC_ENV=production`).

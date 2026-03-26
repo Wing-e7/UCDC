@@ -1,5 +1,7 @@
 # User-Consented Distributed Compute Engine Architecture
 
+This document describes target-state architecture. For current product framing and active in-scope boundaries, see `project-context.md`.
+
 ## Vision & Value
 - Provide a distributed compute fabric that only runs workloads users explicitly consent to, unlocking community access to niche tools and agents that are otherwise gated or proprietary.
 - Make the platform easy to reason about, extensible for new compute agents, and safe by design with transparent consent, data isolation, and reviewable logs.
