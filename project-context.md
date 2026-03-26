@@ -30,6 +30,32 @@ Reference: `ARCHITECTURE.md`
 - **Execute via adapter**: run card-specific logic in a controlled adapter.
 - **Audit lifecycle events**: produce verifiable logs for trust, safety, and payout traceability.
 
+## Spyder Messaging Layer (Indian TG)
+- This layer standardizes product language for onboarding and growth communication aimed at Indian 18-25 users.
+- It is applied to copy, naming, and UX explainers only. It does not alter backend contracts or architecture.
+
+### Canonical Naming Map
+- Consent -> **Access Pact**
+- Job request -> **Mission Pulse**
+- Adapter -> **Bridge**
+- Audit log -> **Trace Ledger**
+- Revocation -> **Mission Recall**
+
+### Copy Standards
+- Hero message formula: benefit + control + earnings.
+  - Example: "Power your Staffer, earn from gigs, keep control over consent."
+- Three-value onboarding strip:
+  - consent visibility,
+  - earning path,
+  - trust trail.
+- Core step narrative text should align to:
+  - "Consent -> Job -> Execution -> Audit"
+
+### Trust and Economics Guardrails (Messaging)
+- Every earnings claim must map to an auditable lifecycle event.
+- Every control claim must mention revoke, TTL, or rate-limit boundaries.
+- If legal/compliance wording differs, legal wording remains primary and Spyder naming is secondary.
+
 ## Architecture Alignment (What Exists vs What Is Planned)
 - **Implemented baseline**
   - Consent issuance/revocation and consent event logging.
@@ -54,6 +80,8 @@ Reference: `ARCHITECTURE.md`
   - auditable payout-related events.
 - Keep Staffer actions human-approved at key checkpoints.
 - Prioritize hardening-first delivery (security, reliability, policy) before ecosystem expansion.
+- Apply Spyder naming and onboarding copy to user-facing language for Compute Earner and Staffer.
+- Spyder integration is messaging and UX language only; it does not expand technical MVP scope.
 
 ### Out of Scope (Now)
 - Tradable card marketplace or on-chain ownership mechanics.
@@ -74,12 +102,20 @@ Reference: `ARCHITECTURE.md`
 - Rate/concurrency controls and clear revoke semantics.
 - Baseline earning/payout ledger events.
 - Cloud-safe configuration and startup checks.
+- Deliver Compute Earner onboarding copy using Spyder language:
+  - Access Pact explainer,
+  - rate-limit transparency copy,
+  - Trace Ledger earning proof labels.
 
 ### Sprint 2: Staffer MVP + Human-In-Loop Reliability
 - Staffer pipeline with mandatory approval checkpoints.
 - Idempotency, retry/backoff, timeout/cancel semantics across jobs.
 - Payout traceability tied to job lifecycle outcomes.
 - Scenario tests for revocation mid-flow, duplicates, and worker recovery.
+- Deliver Staffer trust and approval copy using Spyder language:
+  - Mission Pulse approval checkpoints,
+  - Mission Recall impact messaging,
+  - Trace Ledger payout traceability labels.
 
 ## Guardrails For Subagents
 - Do not propose features outside "In Scope (Now)" unless explicitly requested.
@@ -87,6 +123,8 @@ Reference: `ARCHITECTURE.md`
 - Favor incremental, test-backed changes that preserve the existing consent-job-adapter contract.
 - Any new revenue or payout logic must be traceable through auditable events.
 - When unclear, ask for scope clarification before implementation.
+- For roadmap, UX, and growth language work, reference this file first and use the Spyder naming map consistently.
+- Any new naming proposal must include a one-line reason tied to consent trust, monetization clarity, or user control.
 
 ## Core References
 - `ARCHITECTURE.md`
