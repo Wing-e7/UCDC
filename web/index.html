@@ -3,226 +3,364 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UCDC — consent demo</title>
+  <title>Mission Control — Trust Pact Onboarding</title>
   <style>
     :root {
-      --bg: #0f1419;
-      --card: #1a2332;
-      --text: #e7eef7;
-      --muted: #8b9bb0;
-      --accent: #3d9eff;
-      --danger: #f07178;
-      --ok: #7fd99a;
-      --border: #2a3545;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --bg: #070b12;
+      --panel: #10182a;
+      --panel-2: #0c1322;
+      --text: #e6f0ff;
+      --muted: #95a7c3;
+      --accent: #5ad0ff;
+      --accent-2: #9f7bff;
+      --danger: #ff6f7d;
+      --ok: #8cf5bf;
+      --warn: #ffd58a;
+      --border: #243451;
+      --glow: 0 0 0 1px rgba(90, 208, 255, 0.25), 0 0 18px rgba(90, 208, 255, 0.12);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--bg);
       color: var(--text);
-      line-height: 1.5;
+      background:
+        radial-gradient(1200px 500px at 12% -10%, rgba(159, 123, 255, 0.22), transparent),
+        radial-gradient(1000px 500px at 95% 0%, rgba(90, 208, 255, 0.2), transparent),
+        var(--bg);
+      line-height: 1.45;
     }
-    main { max-width: 56rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
-    h1 { font-size: 1.35rem; font-weight: 600; margin: 0 0 0.25rem; }
-    .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
-    section {
-      background: var(--card);
+    main { max-width: 1120px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+    h1 { margin: 0; font-size: 1.45rem; letter-spacing: 0.01em; }
+    .sub { margin: 0.35rem 0 1rem; color: var(--muted); font-size: 0.92rem; }
+    .hero {
+      border: 1px solid var(--border);
+      background: linear-gradient(170deg, rgba(18, 27, 47, 0.98), rgba(10, 16, 30, 0.98));
+      border-radius: 14px;
+      padding: 1rem 1rem 0.85rem;
+      margin-bottom: 0.9rem;
+      box-shadow: var(--glow);
+    }
+    .pillbar { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.6rem; }
+    .pill {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #0f1729;
+      color: var(--muted);
+      font-size: 0.74rem;
+      padding: 0.22rem 0.52rem;
+    }
+    .pill.good { border-color: rgba(140, 245, 191, 0.35); color: var(--ok); }
+    .layout { display: grid; gap: 0.8rem; grid-template-columns: 1.25fr 1fr; }
+    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.9rem;
+    }
+    .panel h2 {
+      margin: 0 0 0.55rem;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .kpis { display: grid; gap: 0.55rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0.8rem; }
+    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .kpi {
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1rem 1.1rem;
-      margin-bottom: 1rem;
+      background: var(--panel-2);
+      padding: 0.55rem 0.6rem;
     }
-    section h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 0.75rem; }
-    label { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
-    input, textarea {
-      width: 100%;
-      margin-top: 0.2rem;
-      padding: 0.45rem 0.55rem;
-      border-radius: 6px;
+    .kpi .label { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi .value { font-size: 1.25rem; font-weight: 700; margin-top: 0.1rem; }
+    .kpi .delta { font-size: 0.75rem; color: var(--muted); }
+    .agent-grid { display: grid; gap: 0.55rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .agent-card {
       border: 1px solid var(--border);
-      background: #121a24;
-      color: var(--text);
-      font-size: 0.95rem;
+      border-radius: 10px;
+      background: var(--panel-2);
+      padding: 0.62rem;
     }
-    textarea { min-height: 4rem; resize: vertical; }
-    .row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .agent-card h3 { margin: 0; font-size: 0.92rem; }
+    .agent-card p { margin: 0.28rem 0 0.55rem; color: var(--muted); font-size: 0.78rem; min-height: 2.3rem; }
+    .status {
+      display: inline-block;
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 0.15rem 0.45rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-bottom: 0.45rem;
+    }
+    .status.active { color: var(--ok); border-color: rgba(140, 245, 191, 0.4); }
     button {
       cursor: pointer;
       border: none;
       border-radius: 8px;
-      padding: 0.5rem 0.9rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      background: var(--accent);
-      color: #0a0f14;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.83rem;
+      font-weight: 600;
+      background: linear-gradient(130deg, var(--accent), #73e3ff);
+      color: #051018;
     }
-    button.secondary { background: #2a3545; color: var(--text); }
-    button.danger { background: var(--danger); color: #0a0f14; }
-    button:disabled { opacity: 0.45; cursor: not-allowed; }
-    pre {
-      margin: 0.75rem 0 0;
-      padding: 0.75rem;
-      background: #121a24;
-      border-radius: 8px;
+    button.secondary { background: #23324d; color: var(--text); }
+    button.danger { background: linear-gradient(130deg, #ff7d8a, var(--danger)); color: #1a0b10; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    label { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.75rem; }
+    input, textarea, select {
+      width: 100%;
+      margin-top: 0.18rem;
+      border-radius: 7px;
       border: 1px solid var(--border);
-      font-size: 0.78rem;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
+      background: #0b1220;
+      color: var(--text);
+      padding: 0.42rem 0.52rem;
+      font-size: 0.85rem;
     }
-    .trust { font-size: 0.85rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 0.75rem; margin-bottom: 1rem; }
-    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 1rem; }
+    textarea { min-height: 3.6rem; resize: vertical; }
+    .approval {
+      margin-top: 0.55rem;
+      border: 1px dashed rgba(95, 218, 255, 0.45);
+      border-radius: 9px;
+      padding: 0.5rem 0.55rem;
+      background: rgba(9, 22, 42, 0.5);
+    }
+    .approval label { display: flex; gap: 0.5rem; margin: 0; color: var(--text); }
+    .approval input[type="checkbox"] { width: auto; margin-top: 0.15rem; }
+    .tiny { color: var(--muted); font-size: 0.75rem; margin: 0.2rem 0; }
+    .steps { display: grid; gap: 0.45rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0.7rem; }
+    @media (max-width: 680px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .step {
       border: 1px solid var(--border);
-      background: #121a24;
       border-radius: 8px;
-      padding: 0.6rem;
-      font-size: 0.78rem;
+      padding: 0.45rem;
+      background: #0c1323;
       color: var(--muted);
-    }
-    .step.active {
-      border-color: var(--accent);
-      color: var(--text);
-    }
-    .badge-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.35rem; }
-    .badge {
-      display: inline-block;
       font-size: 0.72rem;
-      border-radius: 999px;
+    }
+    .step.active { border-color: rgba(95, 218, 255, 0.65); color: var(--text); }
+    pre {
+      margin: 0.52rem 0 0;
       border: 1px solid var(--border);
-      background: #121a24;
-      color: var(--muted);
-      padding: 0.2rem 0.45rem;
-    }
-    .badge.good {
-      border-color: #28523a;
-      color: var(--ok);
-    }
-    .grid {
-      display: grid;
-      gap: 0.8rem;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-    .panel {
-      border: 1px solid var(--border);
+      background: #0a1322;
       border-radius: 8px;
-      background: #121a24;
-      padding: 0.7rem;
+      padding: 0.55rem;
+      font-size: 0.74rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 170px;
+      overflow: auto;
     }
-    .panel h3 {
-      margin: 0 0 0.35rem;
-      font-size: 0.86rem;
-      color: var(--text);
-    }
-    .tiny { font-size: 0.78rem; color: var(--muted); margin: 0; }
-    .approval {
-      margin-top: 0.75rem;
-      padding: 0.7rem;
-      border-radius: 8px;
+    .feed {
       border: 1px solid var(--border);
-      background: #121a24;
+      border-radius: 10px;
+      background: #0b1221;
+      padding: 0.55rem;
+      min-height: 120px;
+      max-height: 250px;
+      overflow: auto;
+      font-size: 0.76rem;
     }
-    .approval label { margin: 0; display: flex; align-items: flex-start; gap: 0.5rem; color: var(--text); }
-    .approval input[type="checkbox"] { width: auto; margin-top: 0.15rem; }
+    .feed-item { padding: 0.28rem 0; border-bottom: 1px solid rgba(38, 54, 84, 0.55); }
+    .feed-item:last-child { border-bottom: none; }
+    .warning {
+      border-left: 3px solid var(--warn);
+      background: rgba(255, 213, 138, 0.08);
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      color: #ffe0ab;
+      font-size: 0.78rem;
+      margin-top: 0.55rem;
+    }
   </style>
 </head>
 <body>
   <main>
-    <h1>Staffer onboarding — Trust Pact demo</h1>
-    <p class="sub">Activate your Trust Pact, launch jobs from Mission Board, and keep control with Kill Switch. This page talks to local APIs.</p>
-    <p class="trust">
-      <strong>Before you continue:</strong> Staffer only activates after your approval checkpoint. Every action is captured in Proof Ledger for traceable payouts.
-    </p>
-    <div class="steps">
-      <div class="step active" id="step1">1. Trust Pact setup</div>
-      <div class="step" id="step2">2. Human approval</div>
-      <div class="step" id="step3">3. Mission Board</div>
-      <div class="step" id="step4">4. Proof Ledger + Kill Switch</div>
-    </div>
-
-    <section>
-      <h2>API bases</h2>
-      <label>Consent service URL
-        <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
-      </label>
-      <label>Orchestrator URL
-        <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
-      </label>
+    <section class="hero">
+      <h1>Mission Control // Trust Pact Onboarding</h1>
+      <p class="sub">Designed for local setup: pick an agent, approve Trust Pact, launch from Mission Board, and monitor everything in Proof Ledger.</p>
+      <div class="pillbar">
+        <span class="pill good">Kid-simple UX</span>
+        <span class="pill good">Sci-fi mission feel</span>
+        <span class="pill good">Human approval gate</span>
+        <span class="pill">Founder/Operator view</span>
+      </div>
     </section>
 
-    <section>
-      <h2>1 · Trust Pact setup</h2>
+    <section class="panel">
+      <h2>Mission Control Pulse</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="label">Local installs</div><div class="value" id="kpiInstalls">0</div><div class="delta">This device</div></div>
+        <div class="kpi"><div class="label">Trust Pacts</div><div class="value" id="kpiPacts">0</div><div class="delta">Activated</div></div>
+        <div class="kpi"><div class="label">Missions</div><div class="value" id="kpiMissions">0</div><div class="delta">Launched</div></div>
+        <div class="kpi"><div class="label">Kill Switch</div><div class="value" id="kpiKills">0</div><div class="delta">Triggers</div></div>
+      </div>
+      <div class="row">
+        <button type="button" class="secondary" id="btnRefreshHealth">Refresh system health</button>
+      </div>
+      <p class="tiny" id="systemHealth">System health: pending</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>Agent Bay (Active on local)</h2>
+        <div class="agent-grid" id="agentGrid"></div>
+        <div class="warning">
+          Activate any agent to trigger the consent flow. The approval checkpoint is mandatory before Trust Pact activation.
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>API Connections</h2>
+        <label>Consent service URL
+          <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
+        </label>
+        <label>Orchestrator URL
+          <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
+        </label>
+        <p class="tiny">Tip: these are remembered in your browser for quick local testing.</p>
+      </section>
+    </div>
+
+    <section class="panel" id="consentFlow">
+      <h2>Trust Pact Activation Flow</h2>
+      <div class="steps">
+        <div class="step active" id="step1">1. Pick active agent</div>
+        <div class="step" id="step2">2. Human approval</div>
+        <div class="step" id="step3">3. Launch mission</div>
+        <div class="step" id="step4">4. Proof Ledger + Kill Switch</div>
+      </div>
       <label>User ID <input type="text" id="userId" value="demo-user" /></label>
-      <label>Agent ID <input type="text" id="agentId" value="staffer-agent" /></label>
+      <label>Agent ID <input type="text" id="agentId" value="" placeholder="Select from Agent Bay" /></label>
       <label>Resources (one URI per line) <textarea id="resources">s3://bucket/a</textarea></label>
-      <label>Explanation (plain language) <textarea id="explanation">Activate Staffer to discover suitable gigs with human approval before sensitive actions.</textarea></label>
+      <label>Explanation (plain language) <textarea id="explanation">Activate this agent under Trust Pact with safe limits and a human approval checkpoint.</textarea></label>
       <label>TTL (seconds) <input type="number" id="ttl" value="3600" min="60" /></label>
       <div class="approval">
         <label>
           <input type="checkbox" id="approvalCheck" />
-          <span>I approve Trust Pact activation for this Staffer setup. I understand I can stop future jobs anytime with Kill Switch.</span>
+          <span>I approve this Trust Pact activation. I can stop future missions using Kill Switch at any time.</span>
         </label>
       </div>
       <div class="row">
-        <button type="button" id="btnIssue" disabled>Approve &amp; activate Trust Pact</button>
+        <button type="button" id="btnIssue" disabled>Approve &amp; Activate Trust Pact</button>
       </div>
       <pre id="outIssue" hidden></pre>
     </section>
 
-    <section>
-      <h2>2 · Mission Board</h2>
-      <p class="sub" style="margin:0">Launch a mission using the Trust Pact token from step 1.</p>
-      <label>Optional job data (JSON object) <textarea id="jobData">{}</textarea></label>
-      <div class="row">
-        <button type="button" id="btnJob" disabled>Launch mission</button>
-      </div>
-      <pre id="outJob" hidden></pre>
-    </section>
+    <div class="layout">
+      <section class="panel">
+        <h2>Mission Board</h2>
+        <label>Mission payload (JSON) <textarea id="jobData">{}</textarea></label>
+        <div class="row">
+          <button type="button" id="btnJob" disabled>Launch Mission</button>
+        </div>
+        <pre id="outJob" hidden></pre>
+      </section>
+      <section class="panel">
+        <h2>Proof Ledger + Kill Switch</h2>
+        <div class="row">
+          <button type="button" class="danger" id="btnRevoke" disabled>Kill Switch</button>
+          <button type="button" class="secondary" id="btnEvents" disabled>Refresh Proof Ledger</button>
+        </div>
+        <pre id="outRevoke" hidden></pre>
+        <pre id="outEvents" hidden></pre>
+      </section>
+    </div>
 
-    <section>
-      <h2>3 · Proof Ledger + Kill Switch</h2>
-      <div class="row">
-        <button type="button" class="danger" id="btnRevoke" disabled>Kill Switch</button>
-        <button type="button" class="secondary" id="btnEvents" disabled>Refresh Proof Ledger</button>
-      </div>
-      <pre id="outRevoke" hidden></pre>
-      <pre id="outEvents" hidden></pre>
-    </section>
-
-    <section id="dashboard" hidden>
-      <h2>Live dashboard</h2>
-      <div class="panel">
-        <h3>Staffer is live</h3>
-        <p class="tiny">Status updates are tied to Mission Board and Proof Ledger.</p>
-        <div class="badge-row">
-          <span class="badge good">Approved</span>
-          <span class="badge good">Rate-limited</span>
-          <span class="badge good">Proof-logged</span>
-        </div>
-      </div>
-      <div class="grid" style="margin-top:0.75rem">
-        <div class="panel">
-          <h3>Mission Board</h3>
-          <p class="tiny" id="dashMission">No mission launched yet.</p>
-        </div>
-        <div class="panel">
-          <h3>Earning Snapshot</h3>
-          <p class="tiny" id="dashEarnings">Projected daily range: INR 120 - 280 (demo estimate).</p>
-        </div>
-        <div class="panel">
-          <h3>Proof Ledger</h3>
-          <p class="tiny" id="dashLedger">Waiting for first lifecycle event.</p>
-        </div>
-      </div>
+    <section class="panel">
+      <h2>Mission Feed (recent events)</h2>
+      <div class="feed" id="eventFeed"></div>
     </section>
   </main>
   <script>
     const $ = (id) => document.getElementById(id);
-    let consentId = null;
-    let consentToken = null;
-    let resourceList = [];
+
+    const agents = [
+      { id: "staffer-agent", name: "The Staffer", desc: "Finds gigs and opportunities with human approval checkpoints.", active: false },
+      { id: "compute-earner", name: "Compute Earner", desc: "Runs compute missions with rate-limited Trust Pact controls.", active: false },
+      { id: "event-scout", name: "Event Scout", desc: "Tracks community events and mission opportunities.", active: false },
+    ];
+
+    const state = {
+      consentId: null,
+      consentToken: null,
+      resources: [],
+      stats: {
+        installs: 1,
+        trustPacts: 0,
+        missions: 0,
+        kills: 0,
+      },
+      events: [],
+    };
+
+    function appendEvent(type, details) {
+      const stamp = new Date().toLocaleTimeString();
+      state.events.unshift({ stamp, type, details });
+      state.events = state.events.slice(0, 30);
+      renderFeed();
+    }
+
+    function renderFeed() {
+      const root = $("eventFeed");
+      if (!state.events.length) {
+        root.innerHTML = '<div class="feed-item">No events yet. Activate an agent to begin.</div>';
+        return;
+      }
+      root.innerHTML = state.events.map((e) => (
+        '<div class="feed-item"><strong>' + e.stamp + '</strong> · ' + e.type + '<br><span class="tiny">' + e.details + '</span></div>'
+      )).join("");
+    }
+
+    function setStep(active) {
+      ["step1", "step2", "step3", "step4"].forEach((id, idx) => {
+        $(id).classList.toggle("active", idx < active);
+      });
+    }
+
+    function updateKpis() {
+      $("kpiInstalls").textContent = String(state.stats.installs);
+      $("kpiPacts").textContent = String(state.stats.trustPacts);
+      $("kpiMissions").textContent = String(state.stats.missions);
+      $("kpiKills").textContent = String(state.stats.kills);
+    }
+
+    function renderAgents() {
+      const root = $("agentGrid");
+      root.innerHTML = agents.map((agent) => {
+        const statusClass = agent.active ? "status active" : "status";
+        const statusText = agent.active ? "ACTIVE" : "READY";
+        const btn = agent.active
+          ? '<button type="button" class="secondary" data-agent="' + agent.id + '" data-action="focus">Open Flow</button>'
+          : '<button type="button" data-agent="' + agent.id + '" data-action="activate">Activate Agent</button>';
+        return (
+          '<div class="agent-card">' +
+          '<span class="' + statusClass + '">' + statusText + '</span>' +
+          '<h3>' + agent.name + '</h3>' +
+          '<p>' + agent.desc + '</p>' +
+          btn +
+          '</div>'
+        );
+      }).join("");
+      root.querySelectorAll("button[data-agent]").forEach((btn) => {
+        btn.addEventListener("click", () => selectAgent(btn.dataset.agent));
+      });
+    }
+
+    function selectAgent(agentId) {
+      const agent = agents.find((a) => a.id === agentId);
+      if (!agent) return;
+      $("agentId").value = agent.id;
+      $("explanation").value = "Activate " + agent.name + " under Trust Pact with local-safe limits and human approval.";
+      appendEvent("trust_pact.viewed", "Selected " + agent.name + " for activation.");
+      setStep(2);
+      $("consentFlow").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
     function parseResources() {
       return $("resources").value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
@@ -231,19 +369,14 @@
     function loadBases() {
       const c = localStorage.getItem("ucdc_consent_base");
       const o = localStorage.getItem("ucdc_orch_base");
-      $("consentBase").value = c || window.location.origin || "http://127.0.0.1:8001";
+      $("consentBase").value = c || "http://127.0.0.1:8001";
       $("orchBase").value = o || "http://127.0.0.1:8002";
     }
+
     function saveBases() {
       localStorage.setItem("ucdc_consent_base", $("consentBase").value.trim());
       localStorage.setItem("ucdc_orch_base", $("orchBase").value.trim());
     }
-
-    ["consentBase", "orchBase"].forEach((id) => {
-      $(id).addEventListener("change", saveBases);
-    });
-
-    loadBases();
 
     function showPre(id, obj) {
       const el = $(id);
@@ -251,24 +384,21 @@
       el.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
     }
 
-    function setStep(active) {
-      ["step1", "step2", "step3", "step4"].forEach((id, idx) => {
-        const el = $(id);
-        el.classList.toggle("active", idx < active);
-      });
-    }
-
     function refreshIssueState() {
-      $("btnIssue").disabled = !$("approvalCheck").checked;
+      const hasAgent = $("agentId").value.trim().length > 0;
+      $("btnIssue").disabled = !($("approvalCheck").checked && hasAgent);
+      if ($("approvalCheck").checked) {
+        appendEvent("trust_pact.approval_checkpoint_seen", "Human approval checkpoint checked.");
+      }
     }
 
-    async function issue() {
+    async function issueConsent() {
       saveBases();
-      resourceList = parseResources();
+      state.resources = parseResources();
       const body = {
         user_id: $("userId").value.trim(),
         agent_id: $("agentId").value.trim(),
-        resources: resourceList,
+        resources: state.resources,
         explanation: $("explanation").value.trim(),
         ttl_seconds: Number($("ttl").value) || 3600,
       };
@@ -280,74 +410,112 @@
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
-      consentId = data.consent_id;
-      consentToken = data.consent_token;
+
+      state.consentId = data.consent_id;
+      state.consentToken = data.consent_token;
+      state.stats.trustPacts += 1;
+      updateKpis();
       showPre("outIssue", data);
       $("btnJob").disabled = false;
       $("btnRevoke").disabled = false;
       $("btnEvents").disabled = false;
-      $("dashboard").hidden = false;
-      $("dashLedger").textContent = "Trust Pact issued. Proof Ledger is active.";
+      const active = agents.find((a) => a.id === body.agent_id);
+      if (active) active.active = true;
+      renderAgents();
+      appendEvent("trust_pact.activated", "Trust Pact active for " + body.agent_id + ".");
       setStep(3);
     }
 
-    async function scheduleJob() {
+    async function launchMission() {
       saveBases();
       let extra = {};
       try {
         extra = JSON.parse($("jobData").value || "{}");
       } catch (e) {
-        showPre("outJob", "Invalid JSON in job data: " + e.message);
+        showPre("outJob", "Invalid mission payload JSON: " + e.message);
         return;
       }
       const manifest = {
         agent_id: $("agentId").value.trim(),
-        resources: resourceList.length ? resourceList : parseResources(),
+        resources: state.resources.length ? state.resources : parseResources(),
         data: extra,
       };
       const base = $("orchBase").value.replace(/\/$/, "");
+      appendEvent("mission.launch_requested", "Mission requested for " + manifest.agent_id + ".");
       const r = await fetch(base + "/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consent_token: consentToken, job_manifest: manifest }),
+        body: JSON.stringify({ consent_token: state.consentToken, job_manifest: manifest }),
       });
       const data = await r.json().catch(() => ({}));
-      if (!r.ok && r.status !== 202) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
+      if (!r.ok && r.status !== 202) {
+        appendEvent("mission.failed", "Launch failed for " + manifest.agent_id + ".");
+        throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
+      }
+      state.stats.missions += 1;
+      updateKpis();
       showPre("outJob", { ...data, httpStatus: r.status });
-      const jobId = data.job_id || "pending";
-      $("dashMission").textContent = `Latest mission: ${jobId} (HTTP ${r.status})`;
-      $("dashLedger").textContent = "Mission event captured. Use Refresh Proof Ledger for full trail.";
+      appendEvent("mission.launch_accepted", "Mission accepted for " + manifest.agent_id + " (HTTP " + r.status + ").");
       setStep(4);
     }
 
-    async function revoke() {
+    async function killSwitch() {
       saveBases();
       const base = $("consentBase").value.replace(/\/$/, "");
-      const r = await fetch(base + "/consents/" + encodeURIComponent(consentId) + "/revoke", { method: "POST" });
+      const r = await fetch(base + "/consents/" + encodeURIComponent(state.consentId) + "/revoke", { method: "POST" });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
+      state.stats.kills += 1;
+      updateKpis();
       showPre("outRevoke", data);
-      $("dashMission").textContent = "Kill Switch activated. Future missions must fail.";
-      $("dashLedger").textContent = "Revocation event captured in Proof Ledger.";
-      setStep(4);
+      appendEvent("kill_switch.triggered", "Kill Switch triggered for consent " + state.consentId + ".");
     }
 
-    async function events() {
+    async function refreshProofLedger() {
       saveBases();
       const base = $("consentBase").value.replace(/\/$/, "");
-      const r = await fetch(base + "/consents/" + encodeURIComponent(consentId) + "/events");
+      const r = await fetch(base + "/consents/" + encodeURIComponent(state.consentId) + "/events");
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
       showPre("outEvents", data);
       const count = Array.isArray(data) ? data.length : 0;
-      $("dashLedger").textContent = `Proof Ledger synced. ${count} event(s) recorded.`;
+      appendEvent("proof_ledger.event_recorded", "Proof Ledger refreshed with " + count + " event(s).");
     }
 
-    $("btnIssue").addEventListener("click", () => issue().catch((e) => showPre("outIssue", String(e.message || e))));
-    $("btnJob").addEventListener("click", () => scheduleJob().catch((e) => showPre("outJob", String(e.message || e))));
-    $("btnRevoke").addEventListener("click", () => revoke().catch((e) => showPre("outRevoke", String(e.message || e))));
-    $("btnEvents").addEventListener("click", () => events().catch((e) => showPre("outEvents", String(e.message || e))));
+    async function refreshHealth() {
+      saveBases();
+      const consentBase = $("consentBase").value.replace(/\/$/, "");
+      const orchBase = $("orchBase").value.replace(/\/$/, "");
+      let consent = "down";
+      let orch = "down";
+      try {
+        const r1 = await fetch(consentBase + "/health");
+        if (r1.ok) consent = "ok";
+      } catch (_) {}
+      try {
+        const r2 = await fetch(orchBase + "/health");
+        if (r2.ok) orch = "ok";
+      } catch (_) {}
+      const line = "System health: Consent " + consent.toUpperCase() + " | Orchestrator " + orch.toUpperCase();
+      $("systemHealth").textContent = line;
+      appendEvent("service.health_snapshot", line);
+    }
+
+    ["consentBase", "orchBase"].forEach((id) => $(id).addEventListener("change", saveBases));
     $("approvalCheck").addEventListener("change", refreshIssueState);
+    $("agentId").addEventListener("input", refreshIssueState);
+    $("btnIssue").addEventListener("click", () => issueConsent().catch((e) => showPre("outIssue", String(e.message || e))));
+    $("btnJob").addEventListener("click", () => launchMission().catch((e) => showPre("outJob", String(e.message || e))));
+    $("btnRevoke").addEventListener("click", () => killSwitch().catch((e) => showPre("outRevoke", String(e.message || e))));
+    $("btnEvents").addEventListener("click", () => refreshProofLedger().catch((e) => showPre("outEvents", String(e.message || e))));
+    $("btnRefreshHealth").addEventListener("click", () => refreshHealth().catch((e) => $("systemHealth").textContent = String(e.message || e)));
+
+    loadBases();
+    renderAgents();
+    updateKpis();
+    renderFeed();
+    appendEvent("install.completed", "Local setup detected and Mission Control initialized.");
+    refreshHealth();
     refreshIssueState();
   </script>
 </body>
