@@ -25,10 +25,10 @@ Reference: `ARCHITECTURE.md`
   - **Staffer**: an assistant that finds gigs/opportunities with human-in-the-loop approval for sensitive or external actions.
 
 ## System Meaning In This Context
-- **Issue/Revoke consent**: activate/deactivate a card's right to perform work.
-- **Schedule jobs**: queue or run card work units (compute tasks, gig discovery tasks).
-- **Execute via adapter**: run card-specific logic in a controlled adapter.
-- **Audit lifecycle events**: produce verifiable logs for trust, safety, and payout traceability.
+- **Activate/disable Trust Pact (Kill Switch)**: activate/deactivate a card's right to perform work.
+- **Launch missions from Mission Board**: queue or run card work units (compute tasks, gig discovery tasks).
+- **Execute via Engine Link**: run card-specific logic in a controlled adapter.
+- **Track lifecycle events in Proof Ledger**: produce verifiable logs for trust, safety, and payout traceability.
 
 ## Spyder Messaging Layer (Indian TG)
 - This layer standardizes product language for onboarding and growth communication aimed at Indian 18-25 users.
@@ -49,7 +49,7 @@ Reference: `ARCHITECTURE.md`
   - earning path,
   - trust trail.
 - Core step narrative text should align to:
-  - "Consent -> Job -> Execution -> Audit"
+  - "Trust Pact -> Mission Board -> Engine Link -> Proof Ledger"
 
 ### Trust and Economics Guardrails (Messaging)
 - Every earnings claim must map to an auditable lifecycle event.
