@@ -35,11 +35,11 @@ Reference: `ARCHITECTURE.md`
 - It is applied to copy, naming, and UX explainers only. It does not alter backend contracts or architecture.
 
 ### Canonical Naming Map
-- Consent -> **Access Pact**
-- Job request -> **Mission Pulse**
-- Adapter -> **Bridge**
-- Audit log -> **Trace Ledger**
-- Revocation -> **Mission Recall**
+- Consent -> **Trust Pact**
+- Job request -> **Mission Board**
+- Adapter -> **Engine Link**
+- Audit log -> **Proof Ledger**
+- Revocation -> **Kill Switch**
 
 ### Copy Standards
 - Hero message formula: benefit + control + earnings.
@@ -103,9 +103,9 @@ Reference: `ARCHITECTURE.md`
 - Baseline earning/payout ledger events.
 - Cloud-safe configuration and startup checks.
 - Deliver Compute Earner onboarding copy using Spyder language:
-  - Access Pact explainer,
+  - Trust Pact explainer,
   - rate-limit transparency copy,
-  - Trace Ledger earning proof labels.
+  - Proof Ledger earning proof labels.
 
 ### Sprint 2: Staffer MVP + Human-In-Loop Reliability
 - Staffer pipeline with mandatory approval checkpoints.
@@ -113,9 +113,9 @@ Reference: `ARCHITECTURE.md`
 - Payout traceability tied to job lifecycle outcomes.
 - Scenario tests for revocation mid-flow, duplicates, and worker recovery.
 - Deliver Staffer trust and approval copy using Spyder language:
-  - Mission Pulse approval checkpoints,
-  - Mission Recall impact messaging,
-  - Trace Ledger payout traceability labels.
+  - Mission Board approval checkpoints,
+  - Kill Switch impact messaging,
+  - Proof Ledger payout traceability labels.
 
 ## Guardrails For Subagents
 - Do not propose features outside "In Scope (Now)" unless explicitly requested.

@@ -24,7 +24,7 @@
       color: var(--text);
       line-height: 1.5;
     }
-    main { max-width: 42rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    main { max-width: 56rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
     h1 { font-size: 1.35rem; font-weight: 600; margin: 0 0 0.25rem; }
     .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
     section {
@@ -73,15 +73,74 @@
       word-break: break-word;
     }
     .trust { font-size: 0.85rem; color: var(--muted); border-left: 3px solid var(--accent); padding-left: 0.75rem; margin-bottom: 1rem; }
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 1rem; }
+    .step {
+      border: 1px solid var(--border);
+      background: #121a24;
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .step.active {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .badge-row { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.35rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #121a24;
+      color: var(--muted);
+      padding: 0.2rem 0.45rem;
+    }
+    .badge.good {
+      border-color: #28523a;
+      color: var(--ok);
+    }
+    .grid {
+      display: grid;
+      gap: 0.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #121a24;
+      padding: 0.7rem;
+    }
+    .panel h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.86rem;
+      color: var(--text);
+    }
+    .tiny { font-size: 0.78rem; color: var(--muted); margin: 0; }
+    .approval {
+      margin-top: 0.75rem;
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #121a24;
+    }
+    .approval label { margin: 0; display: flex; align-items: flex-start; gap: 0.5rem; color: var(--text); }
+    .approval input[type="checkbox"] { width: auto; margin-top: 0.15rem; }
   </style>
 </head>
 <body>
   <main>
-    <h1>UCDC — consent demo</h1>
-    <p class="sub">Issue consent, run a job, and revoke. This page talks to your local APIs (CORS must allow this origin).</p>
+    <h1>Staffer onboarding — Trust Pact demo</h1>
+    <p class="sub">Activate your Trust Pact, launch jobs from Mission Board, and keep control with Kill Switch. This page talks to local APIs.</p>
     <p class="trust">
-      <strong>Before you continue:</strong> only grant consent if you understand which <em>agent</em> and <em>resources</em> you are allowing. You can revoke consent below; new jobs should fail after revocation.
+      <strong>Before you continue:</strong> Staffer only activates after your approval checkpoint. Every action is captured in Proof Ledger for traceable payouts.
     </p>
+    <div class="steps">
+      <div class="step active" id="step1">1. Trust Pact setup</div>
+      <div class="step" id="step2">2. Human approval</div>
+      <div class="step" id="step3">3. Mission Board</div>
+      <div class="step" id="step4">4. Proof Ledger + Kill Switch</div>
+    </div>
 
     <section>
       <h2>API bases</h2>
@@ -94,36 +153,69 @@
     </section>
 
     <section>
-      <h2>1 · Issue consent</h2>
+      <h2>1 · Trust Pact setup</h2>
       <label>User ID <input type="text" id="userId" value="demo-user" /></label>
-      <label>Agent ID <input type="text" id="agentId" value="example-agent" /></label>
+      <label>Agent ID <input type="text" id="agentId" value="staffer-agent" /></label>
       <label>Resources (one URI per line) <textarea id="resources">s3://bucket/a</textarea></label>
-      <label>Explanation (plain language) <textarea id="explanation">Demo: run a sample job with this consent.</textarea></label>
+      <label>Explanation (plain language) <textarea id="explanation">Activate Staffer to discover suitable gigs with human approval before sensitive actions.</textarea></label>
       <label>TTL (seconds) <input type="number" id="ttl" value="3600" min="60" /></label>
+      <div class="approval">
+        <label>
+          <input type="checkbox" id="approvalCheck" />
+          <span>I approve Trust Pact activation for this Staffer setup. I understand I can stop future jobs anytime with Kill Switch.</span>
+        </label>
+      </div>
       <div class="row">
-        <button type="button" id="btnIssue">Issue consent</button>
+        <button type="button" id="btnIssue" disabled>Approve &amp; activate Trust Pact</button>
       </div>
       <pre id="outIssue" hidden></pre>
     </section>
 
     <section>
-      <h2>2 · Schedule job</h2>
-      <p class="sub" style="margin:0">Uses the same resources as above and the consent token from step 1.</p>
+      <h2>2 · Mission Board</h2>
+      <p class="sub" style="margin:0">Launch a mission using the Trust Pact token from step 1.</p>
       <label>Optional job data (JSON object) <textarea id="jobData">{}</textarea></label>
       <div class="row">
-        <button type="button" id="btnJob" disabled>Schedule job</button>
+        <button type="button" id="btnJob" disabled>Launch mission</button>
       </div>
       <pre id="outJob" hidden></pre>
     </section>
 
     <section>
-      <h2>3 · Revoke &amp; audit</h2>
+      <h2>3 · Proof Ledger + Kill Switch</h2>
       <div class="row">
-        <button type="button" class="danger" id="btnRevoke" disabled>Revoke consent</button>
-        <button type="button" class="secondary" id="btnEvents" disabled>Refresh consent events</button>
+        <button type="button" class="danger" id="btnRevoke" disabled>Kill Switch</button>
+        <button type="button" class="secondary" id="btnEvents" disabled>Refresh Proof Ledger</button>
       </div>
       <pre id="outRevoke" hidden></pre>
       <pre id="outEvents" hidden></pre>
+    </section>
+
+    <section id="dashboard" hidden>
+      <h2>Live dashboard</h2>
+      <div class="panel">
+        <h3>Staffer is live</h3>
+        <p class="tiny">Status updates are tied to Mission Board and Proof Ledger.</p>
+        <div class="badge-row">
+          <span class="badge good">Approved</span>
+          <span class="badge good">Rate-limited</span>
+          <span class="badge good">Proof-logged</span>
+        </div>
+      </div>
+      <div class="grid" style="margin-top:0.75rem">
+        <div class="panel">
+          <h3>Mission Board</h3>
+          <p class="tiny" id="dashMission">No mission launched yet.</p>
+        </div>
+        <div class="panel">
+          <h3>Earning Snapshot</h3>
+          <p class="tiny" id="dashEarnings">Projected daily range: INR 120 - 280 (demo estimate).</p>
+        </div>
+        <div class="panel">
+          <h3>Proof Ledger</h3>
+          <p class="tiny" id="dashLedger">Waiting for first lifecycle event.</p>
+        </div>
+      </div>
     </section>
   </main>
   <script>
@@ -159,6 +251,17 @@
       el.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
     }
 
+    function setStep(active) {
+      ["step1", "step2", "step3", "step4"].forEach((id, idx) => {
+        const el = $(id);
+        el.classList.toggle("active", idx < active);
+      });
+    }
+
+    function refreshIssueState() {
+      $("btnIssue").disabled = !$("approvalCheck").checked;
+    }
+
     async function issue() {
       saveBases();
       resourceList = parseResources();
@@ -183,6 +286,9 @@
       $("btnJob").disabled = false;
       $("btnRevoke").disabled = false;
       $("btnEvents").disabled = false;
+      $("dashboard").hidden = false;
+      $("dashLedger").textContent = "Trust Pact issued. Proof Ledger is active.";
+      setStep(3);
     }
 
     async function scheduleJob() {
@@ -208,6 +314,10 @@
       const data = await r.json().catch(() => ({}));
       if (!r.ok && r.status !== 202) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
       showPre("outJob", { ...data, httpStatus: r.status });
+      const jobId = data.job_id || "pending";
+      $("dashMission").textContent = `Latest mission: ${jobId} (HTTP ${r.status})`;
+      $("dashLedger").textContent = "Mission event captured. Use Refresh Proof Ledger for full trail.";
+      setStep(4);
     }
 
     async function revoke() {
@@ -217,6 +327,9 @@
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
       showPre("outRevoke", data);
+      $("dashMission").textContent = "Kill Switch activated. Future missions must fail.";
+      $("dashLedger").textContent = "Revocation event captured in Proof Ledger.";
+      setStep(4);
     }
 
     async function events() {
@@ -226,12 +339,16 @@
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
       showPre("outEvents", data);
+      const count = Array.isArray(data) ? data.length : 0;
+      $("dashLedger").textContent = `Proof Ledger synced. ${count} event(s) recorded.`;
     }
 
     $("btnIssue").addEventListener("click", () => issue().catch((e) => showPre("outIssue", String(e.message || e))));
     $("btnJob").addEventListener("click", () => scheduleJob().catch((e) => showPre("outJob", String(e.message || e))));
     $("btnRevoke").addEventListener("click", () => revoke().catch((e) => showPre("outRevoke", String(e.message || e))));
     $("btnEvents").addEventListener("click", () => events().catch((e) => showPre("outEvents", String(e.message || e))));
+    $("approvalCheck").addEventListener("change", refreshIssueState);
+    refreshIssueState();
   </script>
 </body>
 </html>
