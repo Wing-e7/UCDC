@@ -68,7 +68,47 @@ class AuditEvent(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     consent_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     job_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    staffer_installer_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     event_type: Mapped[str] = mapped_column(String, nullable=False, index=True)
     details: Mapped[Any] = mapped_column(JSON, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
+
+
+class StafferInstaller(Base):
+    __tablename__ = "staffer_installers"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    state: Mapped[str] = mapped_column(String, nullable=False, default="draft", index=True)
+    payload: Mapped[Any] = mapped_column(JSON, nullable=False, default=dict)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    rejected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    launch_validated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    activated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    rolled_back_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class StafferApproval(Base):
+    __tablename__ = "staffer_approvals"
+    __table_args__ = (UniqueConstraint("staffer_installer_id", "idempotency_key", name="uq_staffer_approval_idempotency"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    staffer_installer_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    action: Mapped[str] = mapped_column(String, nullable=False)
+    idempotency_key: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
+
+
+class StafferLaunchValidation(Base):
+    __tablename__ = "staffer_launch_validations"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    staffer_installer_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True, unique=True)
+    is_valid: Mapped[bool] = mapped_column(nullable=False)
+    details: Mapped[Any] = mapped_column(JSON, nullable=False, default=dict)
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
 

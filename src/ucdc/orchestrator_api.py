@@ -5,7 +5,7 @@ import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy import select
@@ -20,8 +20,26 @@ from .entitlements import enforce_enqueue_admission
 from .job_execution import run_adapter_and_finalize
 from .jwt_utils import decode_consent_token
 from .logging_middleware import RequestLoggingMiddleware
-from .models import AuditEvent, Consent, Job
-from .schemas import AuditEventOut, JobCancelResponse, JobDetail, JobManifest, JobRequest, JobResponse
+from .models import (
+    AuditEvent,
+    Consent,
+    Job,
+    StafferApproval,
+    StafferInstaller,
+    StafferLaunchValidation,
+)
+from .schemas import (
+    AuditEventOut,
+    JobCancelResponse,
+    JobDetail,
+    JobManifest,
+    JobRequest,
+    JobResponse,
+    StafferApprovalRequest,
+    StafferInstallerCreateRequest,
+    StafferInstallerOut,
+    StafferLaunchValidationRequest,
+)
 
 logger = logging.getLogger("ucdc")
 
@@ -195,9 +213,282 @@ def list_job_events(job_id: str, db: Session = Depends(get_db)):
             id=r.id,
             consent_id=r.consent_id,
             job_id=r.job_id,
+            staffer_installer_id=r.staffer_installer_id,
             event_type=r.event_type,
             details=dict(r.details or {}),
             created_at=r.created_at,
         )
         for r in rows
     ]
+
+
+STAFFER_ALLOWED_TRANSITIONS: dict[str, set[str]] = {
+    "submit": {"draft"},
+    "approve": {"submitted"},
+    "reject": {"submitted"},
+    "validate-launch": {"approved"},
+    "activate": {"launch_validated"},
+    "rollback": {"approved", "launch_validation_failed", "launch_validated", "active"},
+}
+
+
+def _installer_out(installer: StafferInstaller) -> StafferInstallerOut:
+    return StafferInstallerOut(
+        id=installer.id,
+        state=installer.state,
+        payload=dict(installer.payload or {}),
+        created_at=installer.created_at,
+        updated_at=installer.updated_at,
+        submitted_at=installer.submitted_at,
+        approved_at=installer.approved_at,
+        rejected_at=installer.rejected_at,
+        launch_validated_at=installer.launch_validated_at,
+        activated_at=installer.activated_at,
+        rolled_back_at=installer.rolled_back_at,
+    )
+
+
+def _get_installer_or_404(db: Session, installer_id: str) -> StafferInstaller:
+    installer = db.get(StafferInstaller, installer_id)
+    if not installer:
+        raise HTTPException(status_code=404, detail="Staffer installer not found")
+    return installer
+
+
+def _require_transition(installer: StafferInstaller, action: str) -> None:
+    allowed_from = STAFFER_ALLOWED_TRANSITIONS[action]
+    if installer.state not in allowed_from:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Installer cannot {action} from state {installer.state}",
+        )
+
+
+def _set_transition_fields(installer: StafferInstaller, *, action: str, now: datetime) -> None:
+    installer.updated_at = now
+    if action == "submit":
+        installer.state = "submitted"
+        installer.submitted_at = now
+    elif action == "approve":
+        installer.state = "approved"
+        installer.approved_at = now
+    elif action == "reject":
+        installer.state = "rejected"
+        installer.rejected_at = now
+    elif action == "activate":
+        installer.state = "active"
+        installer.activated_at = now
+    elif action == "rollback":
+        installer.state = "rolled_back"
+        installer.rolled_back_at = now
+
+
+@app.post("/staffer/installers", response_model=StafferInstallerOut)
+def create_staffer_installer(req: StafferInstallerCreateRequest, db: Session = Depends(get_db)):
+    installer = StafferInstaller(payload=req.payload, state="draft")
+    db.add(installer)
+    db.commit()
+    db.refresh(installer)
+    write_audit_event(
+        db,
+        event_type="staffer.installer.created",
+        staffer_installer_id=installer.id,
+        details={"state": installer.state},
+    )
+    return _installer_out(installer)
+
+
+@app.get("/staffer/installers/{installer_id}", response_model=StafferInstallerOut)
+def get_staffer_installer(installer_id: str, db: Session = Depends(get_db)):
+    installer = _get_installer_or_404(db, installer_id)
+    return _installer_out(installer)
+
+
+@app.get("/staffer/installers/{installer_id}/events", response_model=list[AuditEventOut])
+def list_staffer_installer_events(installer_id: str, db: Session = Depends(get_db)):
+    _get_installer_or_404(db, installer_id)
+    rows = db.scalars(
+        select(AuditEvent)
+        .where(AuditEvent.staffer_installer_id == installer_id)
+        .order_by(AuditEvent.created_at)
+    ).all()
+    return [
+        AuditEventOut(
+            id=r.id,
+            consent_id=r.consent_id,
+            job_id=r.job_id,
+            staffer_installer_id=r.staffer_installer_id,
+            event_type=r.event_type,
+            details=dict(r.details or {}),
+            created_at=r.created_at,
+        )
+        for r in rows
+    ]
+
+
+@app.post("/staffer/installers/{installer_id}/submit", response_model=StafferInstallerOut)
+def submit_staffer_installer(installer_id: str, db: Session = Depends(get_db)):
+    installer = _get_installer_or_404(db, installer_id)
+    _require_transition(installer, "submit")
+    now = datetime.now(timezone.utc)
+    _set_transition_fields(installer, action="submit", now=now)
+    db.add(installer)
+    db.commit()
+    db.refresh(installer)
+    write_audit_event(
+        db,
+        event_type="staffer.installer.submitted",
+        staffer_installer_id=installer.id,
+        details={"state": installer.state},
+    )
+    return _installer_out(installer)
+
+
+def _handle_staffer_approval_action(
+    *,
+    installer: StafferInstaller,
+    db: Session,
+    action: str,
+    idempotency_key: str | None,
+    reason: str | None,
+) -> StafferInstallerOut:
+    if not idempotency_key:
+        raise HTTPException(status_code=400, detail="Idempotency-Key header is required")
+
+    existing = db.scalar(
+        select(StafferApproval).where(
+            StafferApproval.staffer_installer_id == installer.id,
+            StafferApproval.idempotency_key == idempotency_key,
+        )
+    )
+    if existing:
+        if existing.action != action:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Idempotency key already used for action {existing.action}",
+            )
+        return _installer_out(installer)
+
+    _require_transition(installer, action)
+    now = datetime.now(timezone.utc)
+    _set_transition_fields(installer, action=action, now=now)
+    approval = StafferApproval(
+        staffer_installer_id=installer.id,
+        action=action,
+        idempotency_key=idempotency_key,
+        reason=reason,
+    )
+    db.add(approval)
+    db.add(installer)
+    db.commit()
+    db.refresh(installer)
+    event_type = "staffer.installer.approved" if action == "approve" else "staffer.installer.rejected"
+    write_audit_event(
+        db,
+        event_type=event_type,
+        staffer_installer_id=installer.id,
+        details={"state": installer.state, "reason": reason, "idempotency_key": idempotency_key},
+    )
+    return _installer_out(installer)
+
+
+@app.post("/staffer/installers/{installer_id}/approve", response_model=StafferInstallerOut)
+def approve_staffer_installer(
+    installer_id: str,
+    req: StafferApprovalRequest,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    db: Session = Depends(get_db),
+):
+    installer = _get_installer_or_404(db, installer_id)
+    return _handle_staffer_approval_action(
+        installer=installer,
+        db=db,
+        action="approve",
+        idempotency_key=idempotency_key,
+        reason=req.reason,
+    )
+
+
+@app.post("/staffer/installers/{installer_id}/reject", response_model=StafferInstallerOut)
+def reject_staffer_installer(
+    installer_id: str,
+    req: StafferApprovalRequest,
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    db: Session = Depends(get_db),
+):
+    installer = _get_installer_or_404(db, installer_id)
+    return _handle_staffer_approval_action(
+        installer=installer,
+        db=db,
+        action="reject",
+        idempotency_key=idempotency_key,
+        reason=req.reason,
+    )
+
+
+@app.post("/staffer/installers/{installer_id}/validate-launch", response_model=StafferInstallerOut)
+def validate_staffer_launch(
+    installer_id: str,
+    req: StafferLaunchValidationRequest,
+    db: Session = Depends(get_db),
+):
+    installer = _get_installer_or_404(db, installer_id)
+    _require_transition(installer, "validate-launch")
+    now = datetime.now(timezone.utc)
+    installer.updated_at = now
+    installer.launch_validated_at = now
+    installer.state = "launch_validated" if req.is_valid else "launch_validation_failed"
+    validation = StafferLaunchValidation(
+        staffer_installer_id=installer.id,
+        is_valid=req.is_valid,
+        details=req.details,
+        checked_at=now,
+    )
+    db.merge(validation)
+    db.add(installer)
+    db.commit()
+    db.refresh(installer)
+    event_name = "staffer.installer.launch_validated" if req.is_valid else "staffer.installer.launch_validation_failed"
+    write_audit_event(
+        db,
+        event_type=event_name,
+        staffer_installer_id=installer.id,
+        details={"state": installer.state, "validation_details": req.details},
+    )
+    return _installer_out(installer)
+
+
+@app.post("/staffer/installers/{installer_id}/activate", response_model=StafferInstallerOut)
+def activate_staffer_installer(installer_id: str, db: Session = Depends(get_db)):
+    installer = _get_installer_or_404(db, installer_id)
+    _require_transition(installer, "activate")
+    now = datetime.now(timezone.utc)
+    _set_transition_fields(installer, action="activate", now=now)
+    db.add(installer)
+    db.commit()
+    db.refresh(installer)
+    write_audit_event(
+        db,
+        event_type="staffer.installer.activated",
+        staffer_installer_id=installer.id,
+        details={"state": installer.state},
+    )
+    return _installer_out(installer)
+
+
+@app.post("/staffer/installers/{installer_id}/rollback", response_model=StafferInstallerOut)
+def rollback_staffer_installer(installer_id: str, db: Session = Depends(get_db)):
+    installer = _get_installer_or_404(db, installer_id)
+    _require_transition(installer, "rollback")
+    now = datetime.now(timezone.utc)
+    _set_transition_fields(installer, action="rollback", now=now)
+    db.add(installer)
+    db.commit()
+    db.refresh(installer)
+    write_audit_event(
+        db,
+        event_type="staffer.installer.rolled_back",
+        staffer_installer_id=installer.id,
+        details={"state": installer.state},
+    )
+    return _installer_out(installer)

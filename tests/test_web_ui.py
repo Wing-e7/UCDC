@@ -7,5 +7,6 @@ def test_ui_index_served():
     with TestClient(consent_app) as client:
         r = client.get("/ui/")
         assert r.status_code == 200
-        assert "consent demo" in r.text.lower()
-        assert "Issue consent" in r.text
+        text = r.text.lower()
+        assert "mission control" in text
+        assert "trust pact activation flow" in text

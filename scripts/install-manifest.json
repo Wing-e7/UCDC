@@ -1,21 +1,21 @@
 {
   "version": "0.1.0",
   "channel": "stable",
-  "updated_at_utc": "2026-03-26T00:00:00Z",
+  "updated_at_utc": "2026-03-27T00:00:00Z",
   "scripts": {
     "macos": {
-      "stable_url": "https://downloads.example.com/ucdc/stable/install-macos.sh",
-      "beta_url": "https://downloads.example.com/ucdc/beta/install-macos.sh",
-      "sha256": "REPLACE_WITH_SHA256"
+      "stable_url": "https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-macos.sh",
+      "beta_url": "https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-macos.sh",
+      "sha256": "PENDING_MAIN_INSTALL_MACOS_SHA256"
     },
     "windows": {
-      "stable_url": "https://downloads.example.com/ucdc/stable/install-windows.ps1",
-      "beta_url": "https://downloads.example.com/ucdc/beta/install-windows.ps1",
-      "sha256": "REPLACE_WITH_SHA256"
+      "stable_url": "https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-windows.ps1",
+      "beta_url": "https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-windows.ps1",
+      "sha256": "PENDING_MAIN_INSTALL_WINDOWS_SHA256"
     }
   },
   "rollback": {
-    "stable_pointer": "https://downloads.example.com/ucdc/stable/",
+    "stable_pointer": "https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/",
     "prior_version": "0.0.9"
   }
 }

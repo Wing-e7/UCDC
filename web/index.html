@@ -299,10 +299,27 @@
       events: [],
     };
 
+    function persistState() {
+      localStorage.setItem("ucdc_mc_stats", JSON.stringify(state.stats));
+      localStorage.setItem("ucdc_mc_events", JSON.stringify(state.events));
+    }
+
+    function loadState() {
+      try {
+        const stats = JSON.parse(localStorage.getItem("ucdc_mc_stats") || "{}");
+        const events = JSON.parse(localStorage.getItem("ucdc_mc_events") || "[]");
+        state.stats = { ...state.stats, ...stats };
+        if (Array.isArray(events)) {
+          state.events = events.slice(0, 30);
+        }
+      } catch (_) {}
+    }
+
     function appendEvent(type, details) {
       const stamp = new Date().toLocaleTimeString();
       state.events.unshift({ stamp, type, details });
       state.events = state.events.slice(0, 30);
+      persistState();
       renderFeed();
     }
 
@@ -328,6 +345,7 @@
       $("kpiPacts").textContent = String(state.stats.trustPacts);
       $("kpiMissions").textContent = String(state.stats.missions);
       $("kpiKills").textContent = String(state.stats.kills);
+      persistState();
     }
 
     function renderAgents() {
@@ -511,6 +529,7 @@
     $("btnRefreshHealth").addEventListener("click", () => refreshHealth().catch((e) => $("systemHealth").textContent = String(e.message || e)));
 
     loadBases();
+    loadState();
     renderAgents();
     updateKpis();
     renderFeed();

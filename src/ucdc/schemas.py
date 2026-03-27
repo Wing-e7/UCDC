@@ -90,9 +90,37 @@ class AuditEventOut(BaseModel):
     id: str
     consent_id: Optional[str] = None
     job_id: Optional[str] = None
+    staffer_installer_id: Optional[str] = None
     event_type: str
     details: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
+
+
+class StafferInstallerCreateRequest(BaseModel):
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+class StafferApprovalRequest(BaseModel):
+    reason: Optional[str] = None
+
+
+class StafferLaunchValidationRequest(BaseModel):
+    is_valid: bool = True
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class StafferInstallerOut(BaseModel):
+    id: str
+    state: str
+    payload: Dict[str, Any]
+    created_at: datetime
+    updated_at: datetime
+    submitted_at: Optional[datetime] = None
+    approved_at: Optional[datetime] = None
+    rejected_at: Optional[datetime] = None
+    launch_validated_at: Optional[datetime] = None
+    activated_at: Optional[datetime] = None
+    rolled_back_at: Optional[datetime] = None
 
 
 class CapabilitiesResponse(BaseModel):

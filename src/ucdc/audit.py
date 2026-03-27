@@ -13,11 +13,13 @@ def write_audit_event(
     event_type: str,
     consent_id: Optional[str] = None,
     job_id: Optional[str] = None,
+    staffer_installer_id: Optional[str] = None,
     details: Dict[str, Any] | None = None,
 ) -> AuditEvent:
     ev = AuditEvent(
         consent_id=consent_id,
         job_id=job_id,
+        staffer_installer_id=staffer_installer_id,
         event_type=event_type,
         details=details or {},
     )

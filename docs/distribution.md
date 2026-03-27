@@ -4,36 +4,36 @@ This document defines the shipping path for one-line installs with admin privile
 
 ## Channels and Versioning
 
-- Stable channel: `https://downloads.example.com/ucdc/stable/`
-- Beta channel: `https://downloads.example.com/ucdc/beta/`
+- Stable channel: `https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/`
+- Beta channel: `https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/` (branch/tag override recommended for beta)
 - Manifest: `scripts/install-manifest.json`
 
-Use GitHub releases/tags as source of truth, and publish matching installer artifacts to stable/beta URLs.
+Use GitHub releases/tags as source of truth. For immediate usage, installers are pulled directly from `Wing-e7/UCDC`.
 
 ## One-Line Install Commands
 
 ### macOS (admin/sudo)
 
 ```bash
-curl -fsSL https://downloads.example.com/ucdc/stable/install-macos.sh | sudo bash -s -- stable
+curl -fsSL https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-macos.sh | sudo bash -s -- stable
 ```
 
 Beta:
 
 ```bash
-curl -fsSL https://downloads.example.com/ucdc/beta/install-macos.sh | sudo bash -s -- beta
+curl -fsSL https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-macos.sh | sudo bash -s -- beta
 ```
 
 ### Windows (Administrator PowerShell)
 
 ```powershell
-irm https://downloads.example.com/ucdc/stable/install-windows.ps1 | iex
+irm https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-windows.ps1 | iex
 ```
 
 Beta:
 
 ```powershell
-irm https://downloads.example.com/ucdc/beta/install-windows.ps1 | iex
+irm https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-windows.ps1 | iex
 ```
 
 ## Integrity Checks (Required)
@@ -43,20 +43,20 @@ Publish SHA256 checksums per release.
 ### macOS
 
 ```bash
-curl -fsSL https://downloads.example.com/ucdc/stable/install-macos.sh -o install-macos.sh
+curl -fsSL https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-macos.sh -o install-macos.sh
 shasum -a 256 install-macos.sh
 ```
 
 ### Windows
 
 ```powershell
-Invoke-WebRequest https://downloads.example.com/ucdc/stable/install-windows.ps1 -OutFile install-windows.ps1
+Invoke-WebRequest https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-windows.ps1 -OutFile install-windows.ps1
 Get-FileHash .\install-windows.ps1 -Algorithm SHA256
 ```
 
 ## Rollback Procedure
 
-1. Repoint stable URL to prior verified installer artifact.
+1. Repoint stable URL to prior verified installer artifact (GitHub tag/raw path or release asset).
 2. Update `scripts/install-manifest.json` (`version`, `prior_version`, checksums).
 3. Post incident note in release log with rollback timestamp and reason.
 4. Re-run smoke checks on both OS targets.
@@ -65,9 +65,9 @@ Get-FileHash .\install-windows.ps1 -Algorithm SHA256
 
 ### GitHub README snippet
 
-`macOS`: `curl -fsSL https://downloads.example.com/ucdc/stable/install-macos.sh | sudo bash -s -- stable`
+`macOS`: `curl -fsSL https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-macos.sh | sudo bash -s -- stable`
 
-`Windows`: `irm https://downloads.example.com/ucdc/stable/install-windows.ps1 | iex`
+`Windows`: `irm https://raw.githubusercontent.com/Wing-e7/UCDC/main/scripts/install-windows.ps1 | iex`
 
 After install:
 - Onboarding: `http://127.0.0.1:8001/ui/`
