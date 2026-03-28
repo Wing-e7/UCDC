@@ -17,3 +17,6 @@ build/
 
 # Local Cursor IDE settings (keep .cursor/agents and skills versioned if desired)
 .cursor/settings.json
+
+# Local partial clones of external agent repos (do not commit)
+_staffer_clone/

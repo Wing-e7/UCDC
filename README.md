@@ -7,6 +7,8 @@ This repo contains the initial skeleton for:
 
 For active product direction, scope boundaries, and subagent guardrails, read `project-context.md` first.
 
+**Third-party agents (e.g. The Staffer):** integration practices and a copy-paste client bundle live in [`docs/agent-onboarding-ucdc.md`](docs/agent-onboarding-ucdc.md) and [`docs/staffer-ucdc-bundle/`](docs/staffer-ucdc-bundle/).
+
 ## Run with Docker (Postgres)
 
 Optional: copy `cp .env.example .env` and set `JWT_SECRET` (required for `UCDC_ENV=production`).
