@@ -48,6 +48,33 @@ class RevokeResponse(BaseModel):
     revoked_at: datetime
 
 
+class PublicUiConfig(BaseModel):
+    """Non-secret defaults for browser demos and external clients (served at GET /public-config)."""
+
+    consent_base_url: str
+    orchestrator_base_url: str
+    agent_adapter_base_url: str
+    default_agent_id: str
+    staffer_local_bridge: bool = Field(
+        default=False,
+        description="True when POST /local-staffer/* is available (local dev only).",
+    )
+
+
+class StafferLocalStatus(BaseModel):
+    enabled: bool
+    repo_path: Optional[str] = None
+    message: str
+
+
+class StafferLocalRunOut(BaseModel):
+    ok: bool
+    returncode: int
+    stdout: str
+    stderr: str
+    command: str
+
+
 class JobManifest(BaseModel):
     agent_id: str
     resources: List[str] = Field(default_factory=list)

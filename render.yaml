@@ -1,0 +1,32 @@
+# Render Blueprint — consent service + /ui/
+# After first deploy, set DATABASE_URL (postgresql+psycopg://… from Render Postgres) and UCDC_PUBLIC_* URLs in the dashboard.
+# See docs/deploy-render.md
+
+services:
+  - type: web
+    name: ucdc-consent
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: uvicorn ucdc.consent_api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONPATH
+        value: /app/src
+      - key: UCDC_ENV
+        value: production
+      - key: RUN_DB_MIGRATIONS
+        value: "true"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: UCDC_DEFAULT_AGENT_ID
+        value: example-agent
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: UCDC_PUBLIC_CONSENT_BASE_URL
+        sync: false
+      - key: UCDC_PUBLIC_ORCHESTRATOR_BASE_URL
+        sync: false
+      - key: UCDC_PUBLIC_AGENT_ADAPTER_BASE_URL
+        sync: false

@@ -7,7 +7,7 @@ This repo contains the initial skeleton for:
 
 For active product direction, scope boundaries, and subagent guardrails, read `project-context.md` first.
 
-**Third-party agents (e.g. The Staffer):** integration practices and a copy-paste client bundle live in [`docs/agent-onboarding-ucdc.md`](docs/agent-onboarding-ucdc.md) and [`docs/staffer-ucdc-bundle/`](docs/staffer-ucdc-bundle/).
+**Third-party agents (e.g. The Staffer):** integration practices and a copy-paste client bundle live in [`docs/agent-onboarding-ucdc.md`](docs/agent-onboarding-ucdc.md) and [`docs/staffer-ucdc-bundle/`](docs/staffer-ucdc-bundle/). Host-facing URLs for demos are configured with **`UCDC_PUBLIC_*`** in `.env` and exposed at **`GET /public-config`** on the consent service.
 
 ## Run with Docker (Postgres)
 
@@ -18,6 +18,12 @@ docker compose up --build
 ```
 
 Compose reads `.env` for `${JWT_SECRET}` / `${UCDC_ENV}` substitution (defaults are dev-friendly).
+
+## Deploy (Render)
+
+Blueprint and steps for hosting the consent service (including **`/ui/`**) on [Render](https://render.com/) are in [`docs/deploy-render.md`](docs/deploy-render.md). Use `render.yaml` as a starting Blueprint; set `DATABASE_URL` to `postgresql+psycopg://…` and your public `UCDC_PUBLIC_*` URLs in the service dashboard.
+
+**Staffer local bridge:** one-tap Staffer commands run only on your machine (or a container with your repo mounted). They are **disabled** when `UCDC_ENV=production`.
 
 ## Distribution (Windows + macOS)
 

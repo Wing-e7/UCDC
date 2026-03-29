@@ -25,7 +25,16 @@ from .schemas import (
     ConsentMetadata,
     ConsentRequest,
     ConsentResponse,
+    PublicUiConfig,
     RevokeResponse,
+    StafferLocalRunOut,
+    StafferLocalStatus,
+)
+from .staffer_local_bridge import (
+    StafferAction,
+    get_staffer_local_status,
+    is_staffer_local_bridge_enabled,
+    run_staffer_action,
 )
 
 logger = logging.getLogger("ucdc")
@@ -68,6 +77,46 @@ def ready(db: Session = Depends(get_db)):
         return {"status": "ready"}
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"DB not ready: {e}") from e
+
+
+@app.get("/public-config", response_model=PublicUiConfig)
+def public_ui_config():
+    """Expose host-facing service URLs and default agent id for /ui and third-party clients (no secrets)."""
+    s = get_settings()
+    return PublicUiConfig(
+        consent_base_url=s.public_consent_base_url.rstrip("/"),
+        orchestrator_base_url=s.public_orchestrator_base_url.rstrip("/"),
+        agent_adapter_base_url=s.public_agent_adapter_base_url.rstrip("/"),
+        default_agent_id=s.default_agent_id,
+        staffer_local_bridge=is_staffer_local_bridge_enabled(),
+    )
+
+
+def _staffer_local_http(action: StafferAction) -> StafferLocalRunOut:
+    try:
+        return run_staffer_action(action)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e)) from e
+
+
+@app.get("/local-staffer/status", response_model=StafferLocalStatus)
+def staffer_local_status():
+    return get_staffer_local_status()
+
+
+@app.post("/local-staffer/setup", response_model=StafferLocalRunOut)
+def staffer_local_setup():
+    return _staffer_local_http("setup")
+
+
+@app.post("/local-staffer/setup-new", response_model=StafferLocalRunOut)
+def staffer_local_setup_new():
+    return _staffer_local_http("setup_new")
+
+
+@app.post("/local-staffer/execute", response_model=StafferLocalRunOut)
+def staffer_local_execute():
+    return _staffer_local_http("execute")
 
 
 @app.post("/consents", response_model=ConsentResponse)

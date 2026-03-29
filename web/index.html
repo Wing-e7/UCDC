@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mission Control — Trust Pact Onboarding</title>
+  <title>The Staffer — Apply cockpit</title>
   <style>
     :root {
       --bg: #070b12;
@@ -177,95 +177,244 @@
       font-size: 0.78rem;
       margin-top: 0.55rem;
     }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0.65rem 0 0.35rem;
+    }
+    .badge-g {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.28rem 0.55rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: #0f1729;
+      opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .badge-g.unlocked {
+      opacity: 1;
+      border-color: rgba(140, 245, 191, 0.45);
+      color: var(--ok);
+    }
+    .next-win {
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin: 0.35rem 0 0;
+    }
+    details.advanced {
+      margin-top: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 0.65rem;
+      background: rgba(12, 19, 35, 0.65);
+    }
+    details.advanced summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .featured-pill {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-2);
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    pre.staffer-out { margin-top: 0.55rem; max-height: 220px; }
+    .panel.staffer-bridge {
+      border-color: rgba(159, 123, 255, 0.35);
+      background: linear-gradient(165deg, rgba(22, 18, 40, 0.95), rgba(16, 24, 42, 0.98));
+    }
+    .staffer-bridge__lead {
+      margin: 0 0 0.35rem;
+      color: var(--text);
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+    .staffer-bridge__trust {
+      margin: 0 0 0.5rem;
+      color: var(--ok);
+      font-size: 0.76rem;
+    }
+    .staffer-bridge__status {
+      margin: 0 0 0.55rem;
+      word-break: break-word;
+    }
+    .staffer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+    }
+    @media (max-width: 520px) {
+      .staffer-actions { flex-direction: column; }
+      .staffer-actions button { width: 100%; }
+    }
+    details.staffer-bridge__details {
+      margin-top: 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.45rem 0.6rem;
+      background: rgba(12, 19, 35, 0.5);
+    }
+    details.staffer-bridge__details summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .staffer-bridge__list {
+      margin: 0.4rem 0 0;
+      padding-left: 1.1rem;
+      color: var(--muted);
+    }
+    .staffer-result {
+      margin-top: 0.55rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+    .staffer-result--ok {
+      border: 1px solid rgba(140, 245, 191, 0.35);
+      background: rgba(20, 45, 35, 0.35);
+      color: var(--ok);
+    }
+    .staffer-result--err {
+      border: 1px solid rgba(255, 111, 125, 0.4);
+      background: rgba(45, 22, 28, 0.35);
+      color: #ffb8c0;
+    }
   </style>
 </head>
 <body>
   <main>
     <section class="hero">
-      <h1>Mission Control // Trust Pact Onboarding</h1>
-      <p class="sub">Designed for local setup: pick an agent, approve Trust Pact, launch from Mission Board, and monitor everything in Proof Ledger.</p>
+      <h1>Turn on The Staffer</h1>
+      <p class="sub">One place to give permission, send applications that match your saved profile, and see what happened — in words you don’t need a manual for.</p>
       <div class="pillbar">
-        <span class="pill good">Kid-simple UX</span>
-        <span class="pill good">Sci-fi mission feel</span>
-        <span class="pill good">Human approval gate</span>
-        <span class="pill">Founder/Operator view</span>
+        <span class="pill good">You stay in charge</span>
+        <span class="pill good">Works with your saved job boards</span>
+        <span class="pill good">Stop anytime</span>
+        <span class="pill">Built for real gigs</span>
       </div>
+      <div class="badge-row" id="badgeRow" aria-label="Your wins">
+        <span class="badge-g unlocked" id="badgeSetup">Setup seen</span>
+        <span class="badge-g" id="badgeAllow">Permission unlocked</span>
+        <span class="badge-g" id="badgeSend">First send</span>
+        <span class="badge-g" id="badgePause">You hit pause</span>
+      </div>
+      <p class="next-win" id="nextWin">Complete the steps below to light up your badges.</p>
+    </section>
+
+    <section class="panel staffer-bridge" id="stafferLocalPanel" aria-labelledby="stafferBridgeTitle">
+      <h2 id="stafferBridgeTitle">Your Staffer on this device</h2>
+      <p class="staffer-bridge__lead">
+        Set up your boards and profile, or start a clean run — from here, without hunting the terminal first.
+      </p>
+      <p class="tiny staffer-bridge__trust">Runs only on your machine. Hosted UCDC never touches your Staffer project folder.</p>
+      <p class="tiny staffer-bridge__status" id="stafferLocalHint">Checking what’s possible on this page…</p>
+      <div class="staffer-actions" id="stafferLocalButtons">
+        <button type="button" class="secondary" id="btnStafferSetup" disabled title="Runs python run_config.py">Set up</button>
+        <button type="button" class="secondary" id="btnStafferSetupNew" disabled title="Fresh config / overwrite flow">Fresh setup</button>
+        <button type="button" id="btnStafferExecute" disabled title="Runs python main.py --fresh">Run Staffer</button>
+      </div>
+      <details class="staffer-bridge__details">
+        <summary>What each button does</summary>
+        <ul class="tiny staffer-bridge__list">
+          <li><strong>Set up</strong> — your config step (<code>python run_config.py</code>).</li>
+          <li><strong>Fresh setup</strong> — overwrite saved settings (your <code>run_config.py</code> overwrite mode).</li>
+          <li><strong>Run Staffer</strong> — start the app fresh (<code>python main.py --fresh</code>).</li>
+        </ul>
+        <p class="tiny">Needs your local consent server configured with <code>UCDC_ENABLE_STAFFER_LOCAL_BRIDGE</code> and <code>STAFFER_LOCAL_REPO</code>. See README.</p>
+      </details>
+      <div id="stafferLocalSummary" class="staffer-result" hidden></div>
+      <pre class="staffer-out" id="stafferLocalOut" hidden></pre>
     </section>
 
     <section class="panel">
-      <h2>Mission Control Pulse</h2>
+      <h2>Your scoreboard</h2>
       <div class="kpis">
-        <div class="kpi"><div class="label">Local installs</div><div class="value" id="kpiInstalls">0</div><div class="delta">This device</div></div>
-        <div class="kpi"><div class="label">Trust Pacts</div><div class="value" id="kpiPacts">0</div><div class="delta">Activated</div></div>
-        <div class="kpi"><div class="label">Missions</div><div class="value" id="kpiMissions">0</div><div class="delta">Launched</div></div>
-        <div class="kpi"><div class="label">Kill Switch</div><div class="value" id="kpiKills">0</div><div class="delta">Triggers</div></div>
+        <div class="kpi"><div class="label">Setup</div><div class="value" id="kpiInstalls">0</div><div class="delta">This device</div></div>
+        <div class="kpi"><div class="label">Permissions</div><div class="value" id="kpiPacts">0</div><div class="delta">Green lights</div></div>
+        <div class="kpi"><div class="label">Sends</div><div class="value" id="kpiMissions">0</div><div class="delta">Applications queued</div></div>
+        <div class="kpi"><div class="label">Pauses</div><div class="value" id="kpiKills">0</div><div class="delta">You stopped it</div></div>
       </div>
       <div class="row">
-        <button type="button" class="secondary" id="btnRefreshHealth">Refresh system health</button>
+        <button type="button" class="secondary" id="btnRefreshHealth">Check connections</button>
       </div>
-      <p class="tiny" id="systemHealth">System health: pending</p>
+      <p class="tiny" id="systemHealth">Connections: checking…</p>
     </section>
 
     <div class="layout">
       <section class="panel">
-        <h2>Agent Bay (Active on local)</h2>
+        <h2>Pick your agent</h2>
         <div class="agent-grid" id="agentGrid"></div>
         <div class="warning">
-          Activate any agent to trigger the consent flow. The approval checkpoint is mandatory before Trust Pact activation.
+          Start with <strong>The Staffer</strong> to apply using the job boards and profile you already configured. You’ll confirm before anything goes out.
         </div>
       </section>
 
       <section class="panel">
-        <h2>API Connections</h2>
-        <label>Consent service URL
-          <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
-        </label>
-        <label>Orchestrator URL
-          <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
-        </label>
-        <p class="tiny">Tip: these are remembered in your browser for quick local testing.</p>
+        <h2>Behind the scenes</h2>
+        <p class="tiny">Most people never need this. URLs are filled automatically when this page is served from your local stack.</p>
+        <details class="advanced">
+          <summary>Advanced — connection URLs</summary>
+          <label style="margin-top:0.5rem">Permission service
+            <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
+          </label>
+          <label>Send queue service
+            <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
+          </label>
+          <p class="tiny">Saved in this browser only.</p>
+        </details>
       </section>
     </div>
 
     <section class="panel" id="consentFlow">
-      <h2>Trust Pact Activation Flow</h2>
+      <h2>Your 4-step flow</h2>
       <div class="steps">
-        <div class="step active" id="step1">1. Pick active agent</div>
-        <div class="step" id="step2">2. Human approval</div>
-        <div class="step" id="step3">3. Launch mission</div>
-        <div class="step" id="step4">4. Proof Ledger + Kill Switch</div>
+        <div class="step active" id="step1">1. Choose agent</div>
+        <div class="step" id="step2">2. Say yes</div>
+        <div class="step" id="step3">3. Send applies</div>
+        <div class="step" id="step4">4. See activity · Stop anytime</div>
       </div>
-      <label>User ID <input type="text" id="userId" value="demo-user" /></label>
-      <label>Agent ID <input type="text" id="agentId" value="" placeholder="Select from Agent Bay" /></label>
-      <label>Resources (one URI per line) <textarea id="resources">s3://bucket/a</textarea></label>
-      <label>Explanation (plain language) <textarea id="explanation">Activate this agent under Trust Pact with safe limits and a human approval checkpoint.</textarea></label>
-      <label>TTL (seconds) <input type="number" id="ttl" value="3600" min="60" /></label>
+      <label>Your nickname on this device <input type="text" id="userId" value="demo-user" /></label>
+      <label>Agent id <input type="text" id="agentId" value="" placeholder="Picked when you choose an agent card" /></label>
+      <label>What this permission covers <span class="tiny">(one line each — technical ids your Staffer app understands)</span>
+        <textarea id="resources">s3://bucket/a</textarea>
+      </label>
+      <label>Why you’re turning this on <textarea id="explanation">I want The Staffer to send applications that match my saved profile and boards, and I can stop it anytime.</textarea></label>
+      <label>How long this permission lasts (seconds) <input type="number" id="ttl" value="3600" min="60" /></label>
       <div class="approval">
         <label>
           <input type="checkbox" id="approvalCheck" />
-          <span>I approve this Trust Pact activation. I can stop future missions using Kill Switch at any time.</span>
+          <span>I understand what The Staffer can do with this permission. I can pause or revoke it whenever I want.</span>
         </label>
       </div>
       <div class="row">
-        <button type="button" id="btnIssue" disabled>Approve &amp; Activate Trust Pact</button>
+        <button type="button" id="btnIssue" disabled>Allow &amp; continue</button>
       </div>
       <pre id="outIssue" hidden></pre>
     </section>
 
     <div class="layout">
       <section class="panel">
-        <h2>Mission Board</h2>
-        <label>Mission payload (JSON) <textarea id="jobData">{}</textarea></label>
+        <h2>Send applications</h2>
+        <p class="tiny">Optional extra details for this send (usually leave as <code>{}</code>).</p>
+        <label>Extra details (JSON) <textarea id="jobData">{}</textarea></label>
         <div class="row">
-          <button type="button" id="btnJob" disabled>Launch Mission</button>
+          <button type="button" id="btnJob" disabled>Send now</button>
         </div>
         <pre id="outJob" hidden></pre>
       </section>
       <section class="panel">
-        <h2>Proof Ledger + Kill Switch</h2>
+        <h2>Activity &amp; pause</h2>
         <div class="row">
-          <button type="button" class="danger" id="btnRevoke" disabled>Kill Switch</button>
-          <button type="button" class="secondary" id="btnEvents" disabled>Refresh Proof Ledger</button>
+          <button type="button" class="danger" id="btnRevoke" disabled>Pause all · revoke permission</button>
+          <button type="button" class="secondary" id="btnEvents" disabled>Refresh activity log</button>
         </div>
         <pre id="outRevoke" hidden></pre>
         <pre id="outEvents" hidden></pre>
@@ -273,18 +422,47 @@
     </div>
 
     <section class="panel">
-      <h2>Mission Feed (recent events)</h2>
+      <h2>Live feed</h2>
       <div class="feed" id="eventFeed"></div>
     </section>
   </main>
   <script>
     const $ = (id) => document.getElementById(id);
 
-    const agents = [
-      { id: "staffer-agent", name: "The Staffer", desc: "Finds gigs and opportunities with human approval checkpoints.", active: false },
-      { id: "compute-earner", name: "Compute Earner", desc: "Runs compute missions with rate-limited Trust Pact controls.", active: false },
-      { id: "event-scout", name: "Event Scout", desc: "Tracks community events and mission opportunities.", active: false },
+    let agents = [
+      {
+        id: "example-agent",
+        name: "The Staffer",
+        featured: true,
+        desc: "Sends applications that fit your saved profile and boards — only after you say yes here.",
+        active: false,
+      },
+      {
+        id: "compute-earner",
+        name: "Compute Earner",
+        desc: "Earns from shared compute safely, with limits you set.",
+        active: false,
+      },
+      {
+        id: "event-scout",
+        name: "Event Scout",
+        desc: "Surfaces gigs and events that match what you care about.",
+        active: false,
+      },
     ];
+
+    const EVENT_LABELS = {
+      "install.completed": "You’re in",
+      "trust_pact.viewed": "Agent picked",
+      "trust_pact.approval_checkpoint_seen": "You ticked the box",
+      "trust_pact.activated": "Permission on",
+      "mission.launch_requested": "Send queued",
+      "mission.failed": "Send didn’t go through",
+      "mission.launch_accepted": "Send accepted",
+      "kill_switch.triggered": "You paused everything",
+      "proof_ledger.event_recorded": "Activity refreshed",
+      "service.health_snapshot": "Connection check",
+    };
 
     const state = {
       consentId: null,
@@ -323,14 +501,18 @@
       renderFeed();
     }
 
+    function labelForEventType(type) {
+      return EVENT_LABELS[type] || type.replace(/\./g, " · ");
+    }
+
     function renderFeed() {
       const root = $("eventFeed");
       if (!state.events.length) {
-        root.innerHTML = '<div class="feed-item">No events yet. Activate an agent to begin.</div>';
+        root.innerHTML = '<div class="feed-item">Nothing here yet — pick <strong>The Staffer</strong> and allow permission to see your first win.</div>';
         return;
       }
       root.innerHTML = state.events.map((e) => (
-        '<div class="feed-item"><strong>' + e.stamp + '</strong> · ' + e.type + '<br><span class="tiny">' + e.details + '</span></div>'
+        '<div class="feed-item"><strong>' + e.stamp + "</strong> · " + labelForEventType(e.type) + "<br><span class=\"tiny\">" + e.details + "</span></div>"
       )).join("");
     }
 
@@ -340,11 +522,36 @@
       });
     }
 
+    function setBadge(el, on) {
+      if (!el) return;
+      el.classList.toggle("unlocked", !!on);
+    }
+
+    function updateBadgesAndHint() {
+      const s = state.stats;
+      setBadge($("badgeSetup"), s.installs >= 1);
+      setBadge($("badgeAllow"), s.trustPacts >= 1);
+      setBadge($("badgeSend"), s.missions >= 1);
+      setBadge($("badgePause"), s.kills >= 1);
+      const nw = $("nextWin");
+      if (!nw) return;
+      if (s.trustPacts < 1) {
+        nw.textContent = "Next win: allow permission below — then your “Permission unlocked” badge lights up.";
+      } else if (s.missions < 1) {
+        nw.textContent = "Next win: tap Send now — unlock “First send”.";
+      } else if (s.kills < 1) {
+        nw.textContent = "Optional: try Pause to see how revoke works — unlocks “You hit pause”.";
+      } else {
+        nw.textContent = "You’ve cleared the board. Come back anytime to send more applies.";
+      }
+    }
+
     function updateKpis() {
       $("kpiInstalls").textContent = String(state.stats.installs);
       $("kpiPacts").textContent = String(state.stats.trustPacts);
       $("kpiMissions").textContent = String(state.stats.missions);
       $("kpiKills").textContent = String(state.stats.kills);
+      updateBadgesAndHint();
       persistState();
     }
 
@@ -352,12 +559,16 @@
       const root = $("agentGrid");
       root.innerHTML = agents.map((agent) => {
         const statusClass = agent.active ? "status active" : "status";
-        const statusText = agent.active ? "ACTIVE" : "READY";
+        const statusText = agent.active ? "ON" : "Pick me";
+        const featured = agent.featured
+          ? '<span class="featured-pill">Start here</span>'
+          : "";
         const btn = agent.active
-          ? '<button type="button" class="secondary" data-agent="' + agent.id + '" data-action="focus">Open Flow</button>'
-          : '<button type="button" data-agent="' + agent.id + '" data-action="activate">Activate Agent</button>';
+          ? '<button type="button" class="secondary" data-agent="' + agent.id + '" data-action="focus">Open flow</button>'
+          : '<button type="button" data-agent="' + agent.id + '" data-action="activate">Use this agent</button>';
         return (
           '<div class="agent-card">' +
+          featured +
           '<span class="' + statusClass + '">' + statusText + '</span>' +
           '<h3>' + agent.name + '</h3>' +
           '<p>' + agent.desc + '</p>' +
@@ -374,8 +585,13 @@
       const agent = agents.find((a) => a.id === agentId);
       if (!agent) return;
       $("agentId").value = agent.id;
-      $("explanation").value = "Activate " + agent.name + " under Trust Pact with local-safe limits and human approval.";
-      appendEvent("trust_pact.viewed", "Selected " + agent.name + " for activation.");
+      if (agent.featured) {
+        $("explanation").value =
+          "I want The Staffer to send applications that match my saved profile and boards, and I can stop it anytime.";
+      } else {
+        $("explanation").value = "I want " + agent.name + " to run with the limits I set here, and I can stop it anytime.";
+      }
+      appendEvent("trust_pact.viewed", "You chose " + agent.name + ". Next: scroll down and allow permission.");
       setStep(2);
       $("consentFlow").scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -384,11 +600,20 @@
       return $("resources").value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
     }
 
-    function loadBases() {
+    async function loadBasesFromEnv() {
+      let cfg = {};
+      try {
+        const r = await fetch("/public-config");
+        if (r.ok) cfg = await r.json();
+      } catch (_) {}
+      const staffer = agents.find((a) => a.featured);
+      if (staffer && cfg.default_agent_id) {
+        staffer.id = String(cfg.default_agent_id);
+      }
       const c = localStorage.getItem("ucdc_consent_base");
       const o = localStorage.getItem("ucdc_orch_base");
-      $("consentBase").value = c || "http://127.0.0.1:8001";
-      $("orchBase").value = o || "http://127.0.0.1:8002";
+      $("consentBase").value = c || cfg.consent_base_url || "http://127.0.0.1:8001";
+      $("orchBase").value = o || cfg.orchestrator_base_url || "http://127.0.0.1:8002";
     }
 
     function saveBases() {
@@ -405,9 +630,6 @@
     function refreshIssueState() {
       const hasAgent = $("agentId").value.trim().length > 0;
       $("btnIssue").disabled = !($("approvalCheck").checked && hasAgent);
-      if ($("approvalCheck").checked) {
-        appendEvent("trust_pact.approval_checkpoint_seen", "Human approval checkpoint checked.");
-      }
     }
 
     async function issueConsent() {
@@ -440,7 +662,7 @@
       const active = agents.find((a) => a.id === body.agent_id);
       if (active) active.active = true;
       renderAgents();
-      appendEvent("trust_pact.activated", "Trust Pact active for " + body.agent_id + ".");
+      appendEvent("trust_pact.activated", "You’re good to go for " + body.agent_id + ". You can send applies below.");
       setStep(3);
     }
 
@@ -450,7 +672,7 @@
       try {
         extra = JSON.parse($("jobData").value || "{}");
       } catch (e) {
-        showPre("outJob", "Invalid mission payload JSON: " + e.message);
+        showPre("outJob", "Extra details need valid JSON. Tip: use {} if unsure. (" + e.message + ")");
         return;
       }
       const manifest = {
@@ -459,7 +681,7 @@
         data: extra,
       };
       const base = $("orchBase").value.replace(/\/$/, "");
-      appendEvent("mission.launch_requested", "Mission requested for " + manifest.agent_id + ".");
+      appendEvent("mission.launch_requested", "Queueing a send for " + manifest.agent_id + ".");
       const r = await fetch(base + "/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -467,13 +689,13 @@
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok && r.status !== 202) {
-        appendEvent("mission.failed", "Launch failed for " + manifest.agent_id + ".");
+        appendEvent("mission.failed", "Couldn’t queue send for " + manifest.agent_id + ".");
         throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
       }
       state.stats.missions += 1;
       updateKpis();
       showPre("outJob", { ...data, httpStatus: r.status });
-      appendEvent("mission.launch_accepted", "Mission accepted for " + manifest.agent_id + " (HTTP " + r.status + ").");
+      appendEvent("mission.launch_accepted", "Send accepted for " + manifest.agent_id + " (status " + r.status + ").");
       setStep(4);
     }
 
@@ -486,7 +708,7 @@
       state.stats.kills += 1;
       updateKpis();
       showPre("outRevoke", data);
-      appendEvent("kill_switch.triggered", "Kill Switch triggered for consent " + state.consentId + ".");
+      appendEvent("kill_switch.triggered", "All sends paused for this permission (" + state.consentId + ").");
     }
 
     async function refreshProofLedger() {
@@ -497,7 +719,7 @@
       if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
       showPre("outEvents", data);
       const count = Array.isArray(data) ? data.length : 0;
-      appendEvent("proof_ledger.event_recorded", "Proof Ledger refreshed with " + count + " event(s).");
+      appendEvent("proof_ledger.event_recorded", "Loaded " + count + " past event(s) from the log.");
     }
 
     async function refreshHealth() {
@@ -514,7 +736,9 @@
         const r2 = await fetch(orchBase + "/health");
         if (r2.ok) orch = "ok";
       } catch (_) {}
-      const line = "System health: Consent " + consent.toUpperCase() + " | Orchestrator " + orch.toUpperCase();
+      const line =
+        "Permission service: " + (consent === "ok" ? "connected" : "offline") +
+        " · Send queue: " + (orch === "ok" ? "connected" : "offline");
       $("systemHealth").textContent = line;
       appendEvent("service.health_snapshot", line);
     }
@@ -528,14 +752,100 @@
     $("btnEvents").addEventListener("click", () => refreshProofLedger().catch((e) => showPre("outEvents", String(e.message || e))));
     $("btnRefreshHealth").addEventListener("click", () => refreshHealth().catch((e) => $("systemHealth").textContent = String(e.message || e)));
 
-    loadBases();
-    loadState();
-    renderAgents();
-    updateKpis();
-    renderFeed();
-    appendEvent("install.completed", "Local setup detected and Mission Control initialized.");
-    refreshHealth();
-    refreshIssueState();
+    async function refreshStafferLocalUi() {
+      const hint = $("stafferLocalHint");
+      try {
+        const r = await fetch("/local-staffer/status");
+        if (!r.ok) throw new Error(r.statusText);
+        const s = await r.json();
+        hint.textContent = s.enabled
+          ? s.message + (s.repo_path ? " · " + s.repo_path : "")
+          : s.message;
+        const on = !!s.enabled;
+        $("btnStafferSetup").disabled = !on;
+        $("btnStafferSetupNew").disabled = !on;
+        $("btnStafferExecute").disabled = !on;
+      } catch (_) {
+        hint.textContent =
+          "Open this page from your machine’s consent URL (for example http://127.0.0.1:8001/ui/) so these actions can reach your Staffer folder.";
+        $("btnStafferSetup").disabled = true;
+        $("btnStafferSetupNew").disabled = true;
+        $("btnStafferExecute").disabled = true;
+      }
+    }
+
+    function showStafferOut(data) {
+      const pre = $("stafferLocalOut");
+      const sum = $("stafferLocalSummary");
+      if (data == null) {
+        sum.hidden = true;
+        pre.hidden = true;
+        return;
+      }
+      if (typeof data !== "object") {
+        sum.hidden = true;
+        pre.hidden = false;
+        pre.textContent = String(data);
+        return;
+      }
+      if (data.httpStatus != null && data.detail != null) {
+        sum.hidden = false;
+        sum.className = "staffer-result staffer-result--err";
+        const d = data.detail;
+        sum.textContent =
+          "Couldn’t run that — " + (typeof d === "string" ? d : "check the server or your .env.");
+        pre.hidden = false;
+        pre.textContent = JSON.stringify(data, null, 2);
+        return;
+      }
+      sum.hidden = false;
+      sum.className = "staffer-result " + (data.ok ? "staffer-result--ok" : "staffer-result--err");
+      sum.textContent = data.ok
+        ? "That step finished. Move on or tap the next action."
+        : "That command reported an error — read the lines below.";
+      pre.hidden = false;
+      pre.textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function postStafferAction(path, label) {
+      const hint = $("stafferLocalHint");
+      const prev = hint.textContent;
+      $("stafferLocalSummary").hidden = true;
+      $("stafferLocalOut").hidden = true;
+      hint.textContent = "Working on " + label + "…";
+      try {
+        const r = await fetch(path, { method: "POST" });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          showStafferOut({ httpStatus: r.status, detail: data.detail || r.statusText });
+          hint.textContent = prev;
+          await refreshStafferLocalUi();
+          return;
+        }
+        showStafferOut(data);
+        hint.textContent = prev;
+      } catch (e) {
+        showStafferOut(String(e.message || e));
+        hint.textContent = prev;
+      }
+      await refreshStafferLocalUi();
+    }
+
+    $("btnStafferSetup").addEventListener("click", () => postStafferAction("/local-staffer/setup", "Set up"));
+    $("btnStafferSetupNew").addEventListener("click", () => postStafferAction("/local-staffer/setup-new", "Fresh setup"));
+    $("btnStafferExecute").addEventListener("click", () => postStafferAction("/local-staffer/execute", "Run Staffer"));
+
+    (async function initMissionControl() {
+      await loadBasesFromEnv();
+      loadState();
+      renderAgents();
+      updateKpis();
+      renderFeed();
+      appendEvent("install.completed", "Dashboard ready on this device.");
+      await refreshHealth();
+      await refreshStafferLocalUi();
+      refreshIssueState();
+    })();
   </script>
 </body>
 </html>

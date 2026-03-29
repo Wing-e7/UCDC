@@ -47,6 +47,32 @@ class Settings(BaseSettings):
     # Used when no row exists in agent_entitlements for (user_id, agent_id).
     default_max_concurrent_jobs: int = Field(default=10, ge=1, validation_alias="UCDC_DEFAULT_MAX_CONCURRENT_JOBS")
     worker_poll_seconds: float = Field(default=1.0, ge=0.1, validation_alias="UCDC_WORKER_POLL_SECONDS")
+    # Browser / third-party clients: URLs that resolve from the user machine (not Docker internal DNS).
+    public_consent_base_url: str = Field(
+        default="http://127.0.0.1:8001",
+        validation_alias="UCDC_PUBLIC_CONSENT_BASE_URL",
+    )
+    public_orchestrator_base_url: str = Field(
+        default="http://127.0.0.1:8002",
+        validation_alias="UCDC_PUBLIC_ORCHESTRATOR_BASE_URL",
+    )
+    public_agent_adapter_base_url: str = Field(
+        default="http://127.0.0.1:8003",
+        validation_alias="UCDC_PUBLIC_AGENT_ADAPTER_BASE_URL",
+    )
+    # Default agent_id for demo UIs and external clients; must match what the adapter exposes.
+    default_agent_id: str = Field(default="example-agent", validation_alias="UCDC_DEFAULT_AGENT_ID")
+    # Optional: one-click Staffer CLI from /ui (subprocess in STAFFER_LOCAL_REPO). Off by default; never use in production.
+    enable_staffer_local_bridge: bool = Field(default=False, validation_alias="UCDC_ENABLE_STAFFER_LOCAL_BRIDGE")
+    staffer_local_repo: str = Field(default="", validation_alias="STAFFER_LOCAL_REPO")
+    staffer_cmd_setup: str = Field(default="python run_config.py", validation_alias="UCDC_STAFFER_CMD_SETUP")
+    staffer_cmd_setup_new: str = Field(
+        default="python run_config.py --overwrite",
+        validation_alias="UCDC_STAFFER_CMD_SETUP_NEW",
+    )
+    staffer_cmd_execute: str = Field(default="python main.py --fresh", validation_alias="UCDC_STAFFER_CMD_EXECUTE")
+    staffer_cmd_timeout_setup: int = Field(default=600, ge=30, validation_alias="UCDC_STAFFER_CMD_TIMEOUT_SETUP")
+    staffer_cmd_timeout_execute: int = Field(default=3600, ge=60, validation_alias="UCDC_STAFFER_CMD_TIMEOUT_EXECUTE")
 
 
 @lru_cache(maxsize=1)

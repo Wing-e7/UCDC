@@ -25,6 +25,13 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-change-me-dev-change-me-dev-change-me}
       UCDC_ENV: ${UCDC_ENV:-dev}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      UCDC_PUBLIC_CONSENT_BASE_URL: ${UCDC_PUBLIC_CONSENT_BASE_URL:-http://127.0.0.1:8001}
+      UCDC_PUBLIC_ORCHESTRATOR_BASE_URL: ${UCDC_PUBLIC_ORCHESTRATOR_BASE_URL:-http://127.0.0.1:8002}
+      UCDC_PUBLIC_AGENT_ADAPTER_BASE_URL: ${UCDC_PUBLIC_AGENT_ADAPTER_BASE_URL:-http://127.0.0.1:8003}
+      UCDC_DEFAULT_AGENT_ID: ${UCDC_DEFAULT_AGENT_ID:-example-agent}
+      # Optional: mount Staffer into the container and set STAFFER_LOCAL_REPO to that path for /ui one-tap Staffer.
+      UCDC_ENABLE_STAFFER_LOCAL_BRIDGE: ${UCDC_ENABLE_STAFFER_LOCAL_BRIDGE:-false}
+      STAFFER_LOCAL_REPO: ${STAFFER_LOCAL_REPO:-}
       RUN_DB_MIGRATIONS: "true"
     command: ["uvicorn", "ucdc.consent_api:app", "--host", "0.0.0.0", "--port", "8001"]
     ports:
