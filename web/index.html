@@ -3,22 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Staffer — Apply cockpit</title>
+  <title>Mission Control — UCDC</title>
   <style>
     :root {
-      --bg: #070b12;
-      --panel: #10182a;
-      --panel-2: #0c1322;
-      --text: #e6f0ff;
-      --muted: #95a7c3;
-      --accent: #5ad0ff;
-      --accent-2: #9f7bff;
-      --danger: #ff6f7d;
-      --ok: #8cf5bf;
-      --warn: #ffd58a;
-      --border: #243451;
-      --glow: 0 0 0 1px rgba(90, 208, 255, 0.25), 0 0 18px rgba(90, 208, 255, 0.12);
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --bg: #0a0614;
+      --bg-mid: #120a1c;
+      --panel: rgba(22, 14, 38, 0.92);
+      --panel-2: rgba(14, 10, 28, 0.95);
+      --text: #f4f0ff;
+      --muted: #a59bbf;
+      --violet: #8b5cf6;
+      --violet-d: #6d28d9;
+      --orange: #ea580c;
+      --amber: #fb923c;
+      --ok: #4ade80;
+      --danger: #fb7185;
+      --warn: #fcd34d;
+      --border: rgba(139, 92, 246, 0.28);
+      --glass: rgba(30, 20, 50, 0.55);
+      --gradient-hero: linear-gradient(135deg, rgba(124, 58, 237, 0.35) 0%, rgba(234, 88, 12, 0.2) 50%, rgba(15, 10, 30, 0.9) 100%);
+      --gradient-cta: linear-gradient(120deg, #a855f7, #ea580c);
+      --gradient-bar: linear-gradient(90deg, #a855f7, #f97316);
+      font-family: "DM Sans", Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     * { box-sizing: border-box; }
     body {
@@ -26,98 +32,236 @@
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(1200px 500px at 12% -10%, rgba(159, 123, 255, 0.22), transparent),
-        radial-gradient(1000px 500px at 95% 0%, rgba(90, 208, 255, 0.2), transparent),
+        radial-gradient(1000px 600px at 80% -10%, rgba(109, 40, 217, 0.35), transparent),
+        radial-gradient(800px 500px at 10% 20%, rgba(234, 88, 12, 0.12), transparent),
         var(--bg);
       line-height: 1.45;
     }
-    main { max-width: 1120px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
-    h1 { margin: 0; font-size: 1.45rem; letter-spacing: 0.01em; }
-    .sub { margin: 0.35rem 0 1rem; color: var(--muted); font-size: 0.92rem; }
-    .hero {
+    main { max-width: 1180px; margin: 0 auto; padding: 1rem 1rem 3rem; }
+    .mc-hero {
+      position: relative;
+      border-radius: 20px;
+      padding: 1.35rem 1.25rem 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-hero);
       border: 1px solid var(--border);
-      background: linear-gradient(170deg, rgba(18, 27, 47, 0.98), rgba(10, 16, 30, 0.98));
-      border-radius: 14px;
-      padding: 1rem 1rem 0.85rem;
-      margin-bottom: 0.9rem;
-      box-shadow: var(--glow);
+      box-shadow: 0 0 40px rgba(109, 40, 217, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      overflow: hidden;
     }
-    .pillbar { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.6rem; }
-    .pill {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: #0f1729;
+    .mc-hero__tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--amber);
+      margin-bottom: 0.35rem;
+    }
+    .mc-hero h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 4vw, 1.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .mc-hero .sub {
+      margin: 0.5rem 0 1rem;
       color: var(--muted);
-      font-size: 0.74rem;
-      padding: 0.22rem 0.52rem;
+      font-size: 0.94rem;
+      max-width: 36rem;
     }
-    .pill.good { border-color: rgba(140, 245, 191, 0.35); color: var(--ok); }
-    .layout { display: grid; gap: 0.8rem; grid-template-columns: 1.25fr 1fr; }
-    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+    .mc-hero__row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn-cta {
+      cursor: pointer;
+      border: none;
+      border-radius: 999px;
+      padding: 0.55rem 1.35rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: var(--gradient-cta);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+    }
+    .btn-cta:hover { filter: brightness(1.06); }
+    .mc-hosting-note {
+      font-size: 0.72rem;
+      color: var(--muted);
+      max-width: 14rem;
+    }
+    .mc-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    @media (max-width: 640px) { .mc-stats { grid-template-columns: 1fr; } }
+    .mc-stat {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 12px;
+      background: var(--glass);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    .mc-stat__icon { flex-shrink: 0; opacity: 0.95; }
+    .mc-stat__label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .mc-stat__value { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-top: 0.1rem; }
+    .mc-stat__hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0.85rem 0 0.35rem;
+    }
+    .badge-g {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.28rem 0.55rem;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: var(--muted);
+      background: rgba(20, 12, 35, 0.6);
+      opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .badge-g.unlocked {
+      opacity: 1;
+      border-color: rgba(74, 222, 128, 0.5);
+      color: var(--ok);
+    }
+    .next-win { font-size: 0.8rem; color: var(--amber); margin: 0.35rem 0 0; }
     .panel {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.9rem;
+      border-radius: 16px;
+      padding: 1rem 1rem;
+      margin-bottom: 0.9rem;
+      backdrop-filter: blur(8px);
     }
-    .panel h2 {
-      margin: 0 0 0.55rem;
-      font-size: 0.86rem;
+    .panel h2, .panel .h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       color: var(--muted);
+    }
+    .section-lead {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: -0.35rem 0 0.85rem;
+      line-height: 1.4;
     }
     .kpis { display: grid; gap: 0.55rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0.8rem; }
     @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .kpi {
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       background: var(--panel-2);
       padding: 0.55rem 0.6rem;
     }
-    .kpi .label { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .kpi .value { font-size: 1.25rem; font-weight: 700; margin-top: 0.1rem; }
-    .kpi .delta { font-size: 0.75rem; color: var(--muted); }
-    .agent-grid { display: grid; gap: 0.55rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .kpi .label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi .value { font-size: 1.2rem; font-weight: 800; margin-top: 0.1rem; }
+    .kpi .delta { font-size: 0.74rem; color: var(--muted); }
+    .agents-deploy {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
     .agent-card {
+      position: relative;
+      border-radius: 16px;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--panel-2);
-      padding: 0.62rem;
+      background: linear-gradient(165deg, rgba(30, 20, 55, 0.9), rgba(12, 8, 24, 0.98));
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
     }
-    .agent-card h3 { margin: 0; font-size: 0.92rem; }
-    .agent-card p { margin: 0.28rem 0 0.55rem; color: var(--muted); font-size: 0.78rem; min-height: 2.3rem; }
-    .status {
+    .agent-card--staffer { border-color: rgba(167, 139, 250, 0.4); }
+    .agent-card--miner { border-color: rgba(251, 146, 60, 0.35); }
+    .agent-card__visual {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .agent-card--staffer .agent-card__visual {
+      background: radial-gradient(ellipse at 50% 30%, rgba(167, 139, 250, 0.35), transparent 60%),
+        linear-gradient(180deg, rgba(45, 35, 75, 0.9), rgba(15, 10, 30, 0.95));
+    }
+    .agent-card--miner .agent-card__visual {
+      background: radial-gradient(ellipse at 50% 30%, rgba(251, 146, 60, 0.25), transparent 60%),
+        linear-gradient(180deg, rgba(55, 35, 25, 0.85), rgba(15, 10, 25, 0.95));
+    }
+    .agent-card__avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    }
+    .agent-card__avatar svg { width: 52px; height: 52px; }
+    .agent-card__body { padding: 0.75rem 0.9rem 1rem; flex: 1; display: flex; flex-direction: column; }
+    .agent-card__tag {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--amber);
+      margin-bottom: 0.25rem;
+    }
+    .agent-card h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+    .agent-card__persona { font-size: 0.78rem; color: var(--violet); margin: 0.2rem 0 0.35rem; }
+    .agent-card p { margin: 0 0 0.75rem; color: var(--muted); font-size: 0.82rem; line-height: 1.4; flex: 1; }
+    .agent-card .status {
       display: inline-block;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       border-radius: 999px;
-      padding: 0.15rem 0.45rem;
-      border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem;
+      border: 1px solid rgba(139, 92, 246, 0.4);
       color: var(--muted);
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.5rem;
     }
-    .status.active { color: var(--ok); border-color: rgba(140, 245, 191, 0.4); }
+    .agent-card .status.live { color: var(--ok); border-color: rgba(74, 222, 128, 0.5); }
     button {
       cursor: pointer;
       border: none;
-      border-radius: 8px;
-      padding: 0.45rem 0.75rem;
-      font-size: 0.83rem;
-      font-weight: 600;
-      background: linear-gradient(130deg, var(--accent), #73e3ff);
-      color: #051018;
+      border-radius: 10px;
+      padding: 0.48rem 0.9rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      background: var(--gradient-cta);
+      color: #fff;
     }
-    button.secondary { background: #23324d; color: var(--text); }
-    button.danger { background: linear-gradient(130deg, #ff7d8a, var(--danger)); color: #1a0b10; }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.secondary {
+      background: rgba(45, 35, 75, 0.9);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--text);
+    }
+    button.danger { background: linear-gradient(130deg, #fb7185, #be123c); color: #fff; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .layout { display: grid; gap: 0.85rem; grid-template-columns: 1.2fr 1fr; }
+    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+    .layout-2 { display: grid; gap: 0.85rem; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 720px) { .layout-2 { grid-template-columns: 1fr; } }
     .row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
     label { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.75rem; }
     input, textarea, select {
       width: 100%;
       margin-top: 0.18rem;
-      border-radius: 7px;
+      border-radius: 10px;
       border: 1px solid var(--border);
-      background: #0b1220;
+      background: rgba(10, 6, 20, 0.8);
       color: var(--text);
       padding: 0.42rem 0.52rem;
       font-size: 0.85rem;
@@ -125,10 +269,10 @@
     textarea { min-height: 3.6rem; resize: vertical; }
     .approval {
       margin-top: 0.55rem;
-      border: 1px dashed rgba(95, 218, 255, 0.45);
-      border-radius: 9px;
+      border: 1px dashed rgba(167, 139, 250, 0.45);
+      border-radius: 12px;
       padding: 0.5rem 0.55rem;
-      background: rgba(9, 22, 42, 0.5);
+      background: rgba(20, 12, 40, 0.5);
     }
     .approval label { display: flex; gap: 0.5rem; margin: 0; color: var(--text); }
     .approval input[type="checkbox"] { width: auto; margin-top: 0.15rem; }
@@ -137,18 +281,18 @@
     @media (max-width: 680px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .step {
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 0.45rem;
-      background: #0c1323;
+      background: rgba(12, 8, 24, 0.8);
       color: var(--muted);
       font-size: 0.72rem;
     }
-    .step.active { border-color: rgba(95, 218, 255, 0.65); color: var(--text); }
+    .step.active { border-color: rgba(167, 139, 250, 0.65); color: var(--text); }
     pre {
       margin: 0.52rem 0 0;
       border: 1px solid var(--border);
-      background: #0a1322;
-      border-radius: 8px;
+      background: rgba(8, 5, 18, 0.9);
+      border-radius: 10px;
       padding: 0.55rem;
       font-size: 0.74rem;
       white-space: pre-wrap;
@@ -158,97 +302,41 @@
     }
     .feed {
       border: 1px solid var(--border);
-      border-radius: 10px;
-      background: #0b1221;
+      border-radius: 12px;
+      background: rgba(10, 6, 22, 0.85);
       padding: 0.55rem;
-      min-height: 120px;
-      max-height: 250px;
+      min-height: 100px;
+      max-height: 240px;
       overflow: auto;
-      font-size: 0.76rem;
+      font-size: 0.78rem;
     }
-    .feed-item { padding: 0.28rem 0; border-bottom: 1px solid rgba(38, 54, 84, 0.55); }
+    .feed-item { padding: 0.35rem 0; border-bottom: 1px solid rgba(60, 40, 90, 0.5); }
     .feed-item:last-child { border-bottom: none; }
     .warning {
       border-left: 3px solid var(--warn);
-      background: rgba(255, 213, 138, 0.08);
+      background: rgba(251, 191, 36, 0.08);
       padding: 0.5rem 0.65rem;
-      border-radius: 8px;
-      color: #ffe0ab;
-      font-size: 0.78rem;
-      margin-top: 0.55rem;
-    }
-    .badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      margin: 0.65rem 0 0.35rem;
-    }
-    .badge-g {
-      font-size: 0.72rem;
-      border-radius: 999px;
-      padding: 0.28rem 0.55rem;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: #0f1729;
-      opacity: 0.55;
-      transition: opacity 0.2s, border-color 0.2s, color 0.2s;
-    }
-    .badge-g.unlocked {
-      opacity: 1;
-      border-color: rgba(140, 245, 191, 0.45);
-      color: var(--ok);
-    }
-    .next-win {
-      font-size: 0.78rem;
-      color: var(--accent);
-      margin: 0.35rem 0 0;
+      border-radius: 0 10px 10px 0;
+      color: #fde68a;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
     }
     details.advanced {
       margin-top: 0.5rem;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 0.5rem 0.65rem;
-      background: rgba(12, 19, 35, 0.65);
+      background: rgba(12, 8, 24, 0.65);
     }
-    details.advanced summary {
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-    .featured-pill {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--accent-2);
-      margin-bottom: 0.25rem;
-      display: block;
-    }
-    pre.staffer-out { margin-top: 0.55rem; max-height: 220px; }
+    details.advanced summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; }
     .panel.staffer-bridge {
-      border-color: rgba(159, 123, 255, 0.35);
-      background: linear-gradient(165deg, rgba(22, 18, 40, 0.95), rgba(16, 24, 42, 0.98));
+      border-color: rgba(167, 139, 250, 0.4);
+      background: linear-gradient(165deg, rgba(35, 22, 55, 0.95), rgba(14, 10, 28, 0.98));
     }
-    .staffer-bridge__lead {
-      margin: 0 0 0.35rem;
-      color: var(--text);
-      font-size: 0.88rem;
-      line-height: 1.4;
-    }
-    .staffer-bridge__trust {
-      margin: 0 0 0.5rem;
-      color: var(--ok);
-      font-size: 0.76rem;
-    }
-    .staffer-bridge__status {
-      margin: 0 0 0.55rem;
-      word-break: break-word;
-    }
-    .staffer-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.35rem;
-    }
+    .staffer-bridge__lead { margin: 0 0 0.35rem; color: var(--text); font-size: 0.88rem; line-height: 1.4; }
+    .staffer-bridge__trust { margin: 0 0 0.5rem; color: var(--ok); font-size: 0.76rem; }
+    .staffer-bridge__status { margin: 0 0 0.55rem; word-break: break-word; }
+    .staffer-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
     @media (max-width: 520px) {
       .staffer-actions { flex-direction: column; }
       .staffer-actions button { width: 100%; }
@@ -256,49 +344,91 @@
     details.staffer-bridge__details {
       margin-top: 0.65rem;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 0.45rem 0.6rem;
-      background: rgba(12, 19, 35, 0.5);
+      background: rgba(12, 8, 24, 0.5);
     }
-    details.staffer-bridge__details summary {
-      cursor: pointer;
-      color: var(--muted);
+    details.staffer-bridge__details summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; }
+    .staffer-bridge__list { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--muted); }
+    .staffer-result { margin-top: 0.55rem; padding: 0.45rem 0.55rem; border-radius: 10px; font-size: 0.82rem; line-height: 1.35; }
+    .staffer-result--ok { border: 1px solid rgba(74, 222, 128, 0.35); background: rgba(20, 50, 35, 0.35); color: var(--ok); }
+    .staffer-result--err { border: 1px solid rgba(251, 113, 133, 0.4); background: rgba(45, 22, 28, 0.35); color: #fecaca; }
+    pre.staffer-out { margin-top: 0.55rem; max-height: 220px; }
+    .pulse-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .pulse-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.35rem;
+      align-items: center;
       font-size: 0.8rem;
     }
-    .staffer-bridge__list {
-      margin: 0.4rem 0 0;
-      padding-left: 1.1rem;
-      color: var(--muted);
+    .pulse-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(60, 40, 90, 0.6);
+      overflow: hidden;
+      margin-top: 0.25rem;
     }
-    .staffer-result {
-      margin-top: 0.55rem;
-      padding: 0.45rem 0.55rem;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      line-height: 1.35;
+    .pulse-bar > i {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--gradient-bar);
+      transition: width 0.4s ease;
     }
-    .staffer-result--ok {
-      border: 1px solid rgba(140, 245, 191, 0.35);
-      background: rgba(20, 45, 35, 0.35);
-      color: var(--ok);
+    .outcome-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(60, 40, 90, 0.4);
+      font-size: 0.8rem;
     }
-    .staffer-result--err {
-      border: 1px solid rgba(255, 111, 125, 0.4);
-      background: rgba(45, 22, 28, 0.35);
-      color: #ffb8c0;
-    }
+    .outcome-row:last-child { border-bottom: none; }
+    .outcome-row__icon { font-size: 1.1rem; opacity: 0.9; }
   </style>
 </head>
 <body>
   <main>
-    <section class="hero">
-      <h1>Turn on The Staffer</h1>
-      <p class="sub">One place to give permission, send applications that match your saved profile, and see what happened — in words you don’t need a manual for.</p>
-      <div class="pillbar">
-        <span class="pill good">You stay in charge</span>
-        <span class="pill good">Works with your saved job boards</span>
-        <span class="pill good">Stop anytime</span>
-        <span class="pill">Built for real gigs</span>
+    <section class="mc-hero">
+      <span class="mc-hero__tag">Mission control</span>
+      <h1>Unleash your agent power</h1>
+      <p class="sub">Deploy AI agents on your machine, complete tasks, and track wins — you stay in charge. Cloud-hosted agents may arrive later; today your stack runs locally.</p>
+      <div class="mc-hero__row">
+        <button type="button" class="btn-cta" id="btnHeroCta">Get started</button>
+        <p class="mc-hosting-note">Agents you deploy here run on <strong>this device</strong> until you connect a hosted adapter.</p>
+      </div>
+      <div class="mc-stats" aria-label="Your session stats">
+        <div class="mc-stat">
+          <span class="mc-stat__icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z" stroke="#a78bfa" stroke-width="1.5"/><path d="M4 20a8 8 0 0116 0" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+          <div>
+            <div class="mc-stat__label">This device</div>
+            <div class="mc-stat__value" id="statKpiInstalls">1</div>
+            <div class="mc-stat__hint">Session ready</div>
+          </div>
+        </div>
+        <div class="mc-stat">
+          <span class="mc-stat__icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#4ade80" stroke-width="1.2" opacity="0.5"/></svg>
+          </span>
+          <div>
+            <div class="mc-stat__label">Tasks sent</div>
+            <div class="mc-stat__value" id="statKpiMissions">0</div>
+            <div class="mc-stat__hint">From mission queue</div>
+          </div>
+        </div>
+        <div class="mc-stat">
+          <span class="mc-stat__icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fb923c" stroke-width="1.2"/><path d="M12 7v5l3 2" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+          <div>
+            <div class="mc-stat__label">Rewards track</div>
+            <div class="mc-stat__value" id="statKpiRewards">₹0</div>
+            <div class="mc-stat__hint">Demo tally · payouts later</div>
+          </div>
+        </div>
       </div>
       <div class="badge-row" id="badgeRow" aria-label="Your wins">
         <span class="badge-g unlocked" id="badgeSetup">Setup seen</span>
@@ -306,14 +436,12 @@
         <span class="badge-g" id="badgeSend">First send</span>
         <span class="badge-g" id="badgePause">You hit pause</span>
       </div>
-      <p class="next-win" id="nextWin">Complete the steps below to light up your badges.</p>
+      <p class="next-win" id="nextWin">Complete the flow below to light up your badges.</p>
     </section>
 
     <section class="panel staffer-bridge" id="stafferLocalPanel" aria-labelledby="stafferBridgeTitle">
       <h2 id="stafferBridgeTitle">Your Staffer on this device</h2>
-      <p class="staffer-bridge__lead">
-        Set up your boards and profile, or start a clean run — from here, without hunting the terminal first.
-      </p>
+      <p class="staffer-bridge__lead">Set up your boards and profile, or start a clean run — without hunting the terminal first.</p>
       <p class="tiny staffer-bridge__trust">Runs only on your machine. Hosted UCDC never touches your Staffer project folder.</p>
       <p class="tiny staffer-bridge__status" id="stafferLocalHint">Checking what’s possible on this page…</p>
       <div class="staffer-actions" id="stafferLocalButtons">
@@ -328,18 +456,27 @@
           <li><strong>Fresh setup</strong> — overwrite saved settings (your <code>run_config.py</code> overwrite mode).</li>
           <li><strong>Run Staffer</strong> — start the app fresh (<code>python main.py --fresh</code>).</li>
         </ul>
-        <p class="tiny">Needs your local consent server configured with <code>UCDC_ENABLE_STAFFER_LOCAL_BRIDGE</code> and <code>STAFFER_LOCAL_REPO</code>. See README.</p>
+        <p class="tiny">Needs <code>UCDC_ENABLE_STAFFER_LOCAL_BRIDGE</code> and <code>STAFFER_LOCAL_REPO</code> in your environment. See README.</p>
       </details>
       <div id="stafferLocalSummary" class="staffer-result" hidden></div>
       <pre class="staffer-out" id="stafferLocalOut" hidden></pre>
     </section>
 
+    <section class="panel" id="agentsSection">
+      <h2 class="h2">Agents to deploy</h2>
+      <p class="section-lead">Pick an agent to deploy on your machine. You’ll confirm permission before anything sensitive runs.</p>
+      <div class="agents-deploy" id="agentGrid"></div>
+      <div class="warning">
+        Start with <strong>The Staffer</strong> for job applications that match your saved profile. <strong>Miner</strong> earns from shared compute — same permission flow.
+      </div>
+    </section>
+
     <section class="panel">
-      <h2>Your scoreboard</h2>
+      <h2>Scoreboard</h2>
       <div class="kpis">
         <div class="kpi"><div class="label">Setup</div><div class="value" id="kpiInstalls">0</div><div class="delta">This device</div></div>
         <div class="kpi"><div class="label">Permissions</div><div class="value" id="kpiPacts">0</div><div class="delta">Green lights</div></div>
-        <div class="kpi"><div class="label">Sends</div><div class="value" id="kpiMissions">0</div><div class="delta">Applications queued</div></div>
+        <div class="kpi"><div class="label">Sends</div><div class="value" id="kpiMissions">0</div><div class="delta">Queued</div></div>
         <div class="kpi"><div class="label">Pauses</div><div class="value" id="kpiKills">0</div><div class="delta">You stopped it</div></div>
       </div>
       <div class="row">
@@ -348,18 +485,23 @@
       <p class="tiny" id="systemHealth">Connections: checking…</p>
     </section>
 
+    <div class="layout-2">
+      <section class="panel">
+        <h2>Agent pulse</h2>
+        <p class="section-lead">Live status for agents on this session.</p>
+        <div class="pulse-list" id="pulseList"></div>
+      </section>
+      <section class="panel">
+        <h2>Earnings &amp; outcomes</h2>
+        <p class="section-lead">Gamified snapshot — real payouts connect in a later sprint.</p>
+        <div id="outcomesPanel"></div>
+      </section>
+    </div>
+
     <div class="layout">
       <section class="panel">
-        <h2>Pick your agent</h2>
-        <div class="agent-grid" id="agentGrid"></div>
-        <div class="warning">
-          Start with <strong>The Staffer</strong> to apply using the job boards and profile you already configured. You’ll confirm before anything goes out.
-        </div>
-      </section>
-
-      <section class="panel">
         <h2>Behind the scenes</h2>
-        <p class="tiny">Most people never need this. URLs are filled automatically when this page is served from your local stack.</p>
+        <p class="tiny">URLs fill automatically when this page is served from your local stack.</p>
         <details class="advanced">
           <summary>Advanced — connection URLs</summary>
           <label style="margin-top:0.5rem">Permission service
@@ -378,12 +520,12 @@
       <div class="steps">
         <div class="step active" id="step1">1. Choose agent</div>
         <div class="step" id="step2">2. Say yes</div>
-        <div class="step" id="step3">3. Send applies</div>
-        <div class="step" id="step4">4. See activity · Stop anytime</div>
+        <div class="step" id="step3">3. Run task</div>
+        <div class="step" id="step4">4. Activity · Stop anytime</div>
       </div>
       <label>Your nickname on this device <input type="text" id="userId" value="demo-user" /></label>
-      <label>Agent id <input type="text" id="agentId" value="" placeholder="Picked when you choose an agent card" /></label>
-      <label>What this permission covers <span class="tiny">(one line each — technical ids your Staffer app understands)</span>
+      <label>Agent id <input type="text" id="agentId" value="" placeholder="Picked when you deploy an agent" /></label>
+      <label>What this permission covers <span class="tiny">(one line each — ids your agent app understands)</span>
         <textarea id="resources">s3://bucket/a</textarea>
       </label>
       <label>Why you’re turning this on <textarea id="explanation">I want The Staffer to send applications that match my saved profile and boards, and I can stop it anytime.</textarea></label>
@@ -391,7 +533,7 @@
       <div class="approval">
         <label>
           <input type="checkbox" id="approvalCheck" />
-          <span>I understand what The Staffer can do with this permission. I can pause or revoke it whenever I want.</span>
+          <span>I understand what this agent can do with this permission. I can pause or revoke it whenever I want.</span>
         </label>
       </div>
       <div class="row">
@@ -402,8 +544,8 @@
 
     <div class="layout">
       <section class="panel">
-        <h2>Send applications</h2>
-        <p class="tiny">Optional extra details for this send (usually leave as <code>{}</code>).</p>
+        <h2>Send task</h2>
+        <p class="tiny">Optional payload (usually <code>{}</code>).</p>
         <label>Extra details (JSON) <textarea id="jobData">{}</textarea></label>
         <div class="row">
           <button type="button" id="btnJob" disabled>Send now</button>
@@ -429,25 +571,29 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
+    const ICON_STAFFER = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M8 7h8v12a2 2 0 01-2 2h-4a2 2 0 01-2-2V7z" stroke="#e9d5ff" stroke-width="1.4"/><path d="M9 11h6M9 14h4" stroke="#c4b5fd" stroke-width="1.2" stroke-linecap="round"/><circle cx="18" cy="6" r="3.2" fill="#fbbf24" stroke="#d97706" stroke-width="0.6"/><path d="M17 5.5c.8.3 1.3 1 1.3 1.8 0 .5-.2.9-.5 1.2" stroke="#92400e" stroke-width="0.7" stroke-linecap="round"/></svg>';
+    const ICON_MINER = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 18l4-10 4 5 4-9 4 14H4z" stroke="#fdba74" stroke-width="1.3" stroke-linejoin="round" fill="rgba(251,146,60,0.15)"/><circle cx="8" cy="19" r="2.5" fill="#fbbf24" stroke="#d97706"/><circle cx="16" cy="19" r="2.5" fill="#fbbf24" stroke="#d97706"/></svg>';
+
     let agents = [
       {
         id: "example-agent",
         name: "The Staffer",
         featured: true,
-        desc: "Sends applications that fit your saved profile and boards — only after you say yes here.",
+        persona: "Light · professional",
+        desc: "Applies to jobs and gigs that match your saved profile — only after you approve here.",
         active: false,
+        theme: "staffer",
+        icon: "staffer",
       },
       {
         id: "compute-earner",
-        name: "Compute Earner",
-        desc: "Earns from shared compute safely, with limits you set.",
+        name: "Miner",
+        featured: false,
+        persona: "Compute & earn",
+        desc: "Turns spare compute into earnings — with limits you set and clear stops.",
         active: false,
-      },
-      {
-        id: "event-scout",
-        name: "Event Scout",
-        desc: "Surfaces gigs and events that match what you care about.",
-        active: false,
+        theme: "miner",
+        icon: "miner",
       },
     ];
 
@@ -493,6 +639,14 @@
       } catch (_) {}
     }
 
+    function formatInr(n) {
+      try {
+        return "₹" + Number(n).toLocaleString("en-IN");
+      } catch (_) {
+        return "₹" + n;
+      }
+    }
+
     function appendEvent(type, details) {
       const stamp = new Date().toLocaleTimeString();
       state.events.unshift({ stamp, type, details });
@@ -508,7 +662,7 @@
     function renderFeed() {
       const root = $("eventFeed");
       if (!state.events.length) {
-        root.innerHTML = '<div class="feed-item">Nothing here yet — pick <strong>The Staffer</strong> and allow permission to see your first win.</div>';
+        root.innerHTML = '<div class="feed-item">Nothing here yet — deploy <strong>The Staffer</strong> and allow permission to see your first win.</div>';
         return;
       }
       root.innerHTML = state.events.map((e) => (
@@ -536,14 +690,24 @@
       const nw = $("nextWin");
       if (!nw) return;
       if (s.trustPacts < 1) {
-        nw.textContent = "Next win: allow permission below — then your “Permission unlocked” badge lights up.";
+        nw.textContent = "Next win: allow permission — then your “Permission unlocked” badge lights up.";
       } else if (s.missions < 1) {
         nw.textContent = "Next win: tap Send now — unlock “First send”.";
       } else if (s.kills < 1) {
-        nw.textContent = "Optional: try Pause to see how revoke works — unlocks “You hit pause”.";
+        nw.textContent = "Optional: try Pause to unlock “You hit pause”.";
       } else {
-        nw.textContent = "You’ve cleared the board. Come back anytime to send more applies.";
+        nw.textContent = "You’ve cleared the board. Come back anytime.";
       }
+    }
+
+    function updateHeroStats() {
+      const s = state.stats;
+      const elI = $("statKpiInstalls");
+      const elM = $("statKpiMissions");
+      const elR = $("statKpiRewards");
+      if (elI) elI.textContent = String(s.installs);
+      if (elM) elM.textContent = String(s.missions);
+      if (elR) elR.textContent = formatInr(s.missions * 250);
     }
 
     function updateKpis() {
@@ -551,29 +715,82 @@
       $("kpiPacts").textContent = String(state.stats.trustPacts);
       $("kpiMissions").textContent = String(state.stats.missions);
       $("kpiKills").textContent = String(state.stats.kills);
+      updateHeroStats();
       updateBadgesAndHint();
+      updatePulseAndOutcomes();
       persistState();
+    }
+
+    function progressForAgent(agent) {
+      if (!agent.active) return 8;
+      if (state.stats.missions > 0) return 72;
+      return 38;
+    }
+
+    function pulseLabel(agent) {
+      if (!agent.active) return "Idle · deploy to start";
+      if (state.stats.missions > 0) return "Task in flight";
+      return "Permission on · ready to send";
+    }
+
+    function updatePulseAndOutcomes() {
+      const pulse = $("pulseList");
+      const out = $("outcomesPanel");
+      if (!pulse || !out) return;
+      pulse.innerHTML = agents.map((a) => {
+        const pct = progressForAgent(a);
+        return (
+          '<div>' +
+          '<div class="pulse-row"><span>' + a.name + "</span><span class=\"tiny\">" + pulseLabel(a) + "</span></div>" +
+          '<div class="pulse-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
+          "</div>"
+        );
+      }).join("");
+      const demo = state.stats.missions * 250;
+      out.innerHTML =
+        '<div class="outcome-row"><span class="outcome-row__icon" aria-hidden="true">💼</span><div><strong>The Staffer</strong><br><span class="tiny">' +
+        (state.stats.missions > 0 ? state.stats.missions + " task(s) queued" : "Waiting for first send") +
+        "</span></div></div>" +
+        '<div class="outcome-row"><span class="outcome-row__icon" aria-hidden="true">⛏️</span><div><strong>Miner</strong><br><span class="tiny">Compute track · demo " +
+        formatInr(demo) +
+        '"</span></div></div>';
     }
 
     function renderAgents() {
       const root = $("agentGrid");
       root.innerHTML = agents.map((agent) => {
-        const statusClass = agent.active ? "status active" : "status";
-        const statusText = agent.active ? "ON" : "Pick me";
-        const featured = agent.featured
-          ? '<span class="featured-pill">Start here</span>'
-          : "";
+        const statusClass = agent.active ? "status live" : "status";
+        const statusText = agent.active ? "Live on device" : "Ready to deploy";
+        const featured = agent.featured ? '<span class="agent-card__tag">Featured</span>' : "";
+        const ic = agent.icon === "miner" ? ICON_MINER : ICON_STAFFER;
         const btn = agent.active
           ? '<button type="button" class="secondary" data-agent="' + agent.id + '" data-action="focus">Open flow</button>'
-          : '<button type="button" data-agent="' + agent.id + '" data-action="activate">Use this agent</button>';
+          : '<button type="button" data-agent="' + agent.id + '" data-action="activate">Deploy</button>';
         return (
-          '<div class="agent-card">' +
+          '<article class="agent-card agent-card--' +
+          agent.theme +
+          '">' +
+          '<div class="agent-card__visual"><div class="agent-card__avatar">' +
+          ic +
+          "</div></div>" +
+          '<div class="agent-card__body">' +
           featured +
-          '<span class="' + statusClass + '">' + statusText + '</span>' +
-          '<h3>' + agent.name + '</h3>' +
-          '<p>' + agent.desc + '</p>' +
+          '<span class="' +
+          statusClass +
+          '">' +
+          statusText +
+          "</span>" +
+          "<h3>" +
+          agent.name +
+          "</h3>" +
+          '<p class="agent-card__persona">' +
+          agent.persona +
+          "</p>" +
+          "<p>" +
+          agent.desc +
+          "</p>" +
           btn +
-          '</div>'
+          "</div></article>"
         );
       }).join("");
       root.querySelectorAll("button[data-agent]").forEach((btn) => {
@@ -589,7 +806,8 @@
         $("explanation").value =
           "I want The Staffer to send applications that match my saved profile and boards, and I can stop it anytime.";
       } else {
-        $("explanation").value = "I want " + agent.name + " to run with the limits I set here, and I can stop it anytime.";
+        $("explanation").value =
+          "I want Miner to run compute-earn work with the limits I set here, and I can stop it anytime.";
       }
       appendEvent("trust_pact.viewed", "You chose " + agent.name + ". Next: scroll down and allow permission.");
       setStep(2);
@@ -662,7 +880,7 @@
       const active = agents.find((a) => a.id === body.agent_id);
       if (active) active.active = true;
       renderAgents();
-      appendEvent("trust_pact.activated", "You’re good to go for " + body.agent_id + ". You can send applies below.");
+      appendEvent("trust_pact.activated", "You’re good to go for " + body.agent_id + ". You can send tasks below.");
       setStep(3);
     }
 
@@ -742,6 +960,10 @@
       $("systemHealth").textContent = line;
       appendEvent("service.health_snapshot", line);
     }
+
+    $("btnHeroCta").addEventListener("click", () => {
+      $("agentsSection").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 
     ["consentBase", "orchBase"].forEach((id) => $(id).addEventListener("change", saveBases));
     $("approvalCheck").addEventListener("change", refreshIssueState);

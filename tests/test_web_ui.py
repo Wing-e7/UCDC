@@ -11,6 +11,8 @@ def test_ui_index_served():
         assert "the staffer" in text
         assert "your 4-step flow" in text
         assert "your staffer on this device" in text
+        assert "agents to deploy" in text
+        assert "miner" in text
 
 
 def test_public_config_exposes_urls_without_secrets():
