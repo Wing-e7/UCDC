@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy import select
@@ -104,6 +104,11 @@ def staffer_local_status():
     return get_staffer_local_status()
 
 
+@app.post("/local-staffer/get", response_model=StafferLocalRunOut)
+def staffer_local_get():
+    return _staffer_local_http("get")
+
+
 @app.post("/local-staffer/setup", response_model=StafferLocalRunOut)
 def staffer_local_setup():
     return _staffer_local_http("setup")
@@ -148,16 +153,6 @@ def issue_consent(req: ConsentRequest, db: Session = Depends(get_db)):
         revoked_at=None,
     )
     db.add(consent)
-    db.commit()
-    db.refresh(consent)
-
-    token = encode_consent_token(
-        consent_id=consent.id,
-        user_id=consent.user_id,
-        agent_id=consent.agent_id,
-        consent_hash=consent.consent_hash,
-        expires_at=consent.expires_at,
-    )
     write_audit_event(
         db,
         event_type="consent.issued",
@@ -170,6 +165,17 @@ def issue_consent(req: ConsentRequest, db: Session = Depends(get_db)):
             "resource_spec": dict(consent.resource_spec or {}),
             "ttl_seconds": req.ttl_seconds,
         },
+        autocommit=False,
+    )
+    db.commit()
+    db.refresh(consent)
+
+    token = encode_consent_token(
+        consent_id=consent.id,
+        user_id=consent.user_id,
+        agent_id=consent.agent_id,
+        consent_hash=consent.consent_hash,
+        expires_at=consent.expires_at,
     )
     return ConsentResponse(consent_id=consent.id, consent_token=token, expires_at=consent.expires_at)
 
@@ -201,15 +207,16 @@ def revoke_consent(consent_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Consent not found")
     if consent.revoked_at is None:
         consent.revoked_at = datetime.now(timezone.utc)
-        db.add(consent)
-        db.commit()
-        db.refresh(consent)
         write_audit_event(
             db,
             event_type="consent.revoked",
             consent_id=consent.id,
             details={"revoked_at": consent.revoked_at.isoformat()},
+            autocommit=False,
         )
+        db.add(consent)
+        db.commit()
+        db.refresh(consent)
     revoked_at = consent.revoked_at
     if revoked_at is None:
         raise HTTPException(status_code=409, detail="Consent could not be revoked")
@@ -217,12 +224,23 @@ def revoke_consent(consent_id: str, db: Session = Depends(get_db)):
 
 
 @app.get("/consents/{consent_id}/events", response_model=list[AuditEventOut])
-def list_consent_events(consent_id: str, db: Session = Depends(get_db)):
+def list_consent_events(
+    consent_id: str,
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+):
     consent = db.get(Consent, consent_id)
     if not consent:
         raise HTTPException(status_code=404, detail="Consent not found")
     rows = (
-        db.execute(select(AuditEvent).where(AuditEvent.consent_id == consent_id).order_by(AuditEvent.created_at))
+        db.execute(
+            select(AuditEvent)
+            .where(AuditEvent.consent_id == consent_id)
+            .order_by(AuditEvent.created_at, AuditEvent.id)
+            .offset(offset)
+            .limit(limit)
+        )
         .scalars()
         .all()
     )
@@ -231,6 +249,7 @@ def list_consent_events(consent_id: str, db: Session = Depends(get_db)):
             id=r.id,
             consent_id=r.consent_id,
             job_id=r.job_id,
+            staffer_installer_id=r.staffer_installer_id,
             event_type=r.event_type,
             details=dict(r.details or {}),
             created_at=r.created_at,

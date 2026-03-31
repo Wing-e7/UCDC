@@ -7,13 +7,11 @@
   <style>
     :root {
       --bg: #0a0614;
-      --bg-mid: #120a1c;
       --panel: rgba(22, 14, 38, 0.92);
       --panel-2: rgba(14, 10, 28, 0.95);
       --text: #f4f0ff;
       --muted: #a59bbf;
       --violet: #8b5cf6;
-      --violet-d: #6d28d9;
       --orange: #ea580c;
       --amber: #fb923c;
       --ok: #4ade80;
@@ -23,7 +21,6 @@
       --glass: rgba(30, 20, 50, 0.55);
       --gradient-hero: linear-gradient(135deg, rgba(124, 58, 237, 0.35) 0%, rgba(234, 88, 12, 0.2) 50%, rgba(15, 10, 30, 0.9) 100%);
       --gradient-cta: linear-gradient(120deg, #a855f7, #ea580c);
-      --gradient-bar: linear-gradient(90deg, #a855f7, #f97316);
       font-family: "DM Sans", Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
     * { box-sizing: border-box; }
@@ -67,7 +64,7 @@
       margin: 0.5rem 0 1rem;
       color: var(--muted);
       font-size: 0.94rem;
-      max-width: 36rem;
+      max-width: 40rem;
     }
     .mc-hero__row {
       display: flex;
@@ -90,7 +87,7 @@
     .mc-hosting-note {
       font-size: 0.72rem;
       color: var(--muted);
-      max-width: 14rem;
+      max-width: 16rem;
     }
     .mc-stats {
       display: grid;
@@ -157,17 +154,6 @@
       margin: -0.35rem 0 0.85rem;
       line-height: 1.4;
     }
-    .kpis { display: grid; gap: 0.55rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0.8rem; }
-    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    .kpi {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--panel-2);
-      padding: 0.55rem 0.6rem;
-    }
-    .kpi .label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .kpi .value { font-size: 1.2rem; font-weight: 800; margin-top: 0.1rem; }
-    .kpi .delta { font-size: 0.74rem; color: var(--muted); }
     .agents-deploy {
       display: grid;
       gap: 1rem;
@@ -185,11 +171,7 @@
     }
     .agent-card--staffer { border-color: rgba(167, 139, 250, 0.4); }
     .agent-card--miner { border-color: rgba(251, 146, 60, 0.35); }
-    .agent-card__visual {
-      height: 148px;
-      position: relative;
-      overflow: hidden;
-    }
+    .agent-card__visual { height: 148px; position: relative; overflow: hidden; }
     .agent-card--staffer .agent-card__visual {
       background: linear-gradient(180deg, rgba(45, 35, 75, 0.5), rgba(15, 10, 30, 0.95));
     }
@@ -239,13 +221,7 @@
       border: 1px solid rgba(139, 92, 246, 0.4);
       color: var(--text);
     }
-    button.danger { background: linear-gradient(130deg, #fb7185, #be123c); color: #fff; }
     button:disabled { opacity: 0.45; cursor: not-allowed; }
-    .layout { display: grid; gap: 0.85rem; grid-template-columns: 1.2fr 1fr; }
-    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
-    .layout-2 { display: grid; gap: 0.85rem; grid-template-columns: 1fr 1fr; }
-    @media (max-width: 720px) { .layout-2 { grid-template-columns: 1fr; } }
-    .row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
     label { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.75rem; }
     input, textarea, select {
       width: 100%;
@@ -268,8 +244,8 @@
     .approval label { display: flex; gap: 0.5rem; margin: 0; color: var(--text); }
     .approval input[type="checkbox"] { width: auto; margin-top: 0.15rem; }
     .tiny { color: var(--muted); font-size: 0.75rem; margin: 0.2rem 0; }
-    .steps { display: grid; gap: 0.45rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0.7rem; }
-    @media (max-width: 680px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .steps { display: grid; gap: 0.45rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0.7rem; }
+    @media (max-width: 680px) { .steps { grid-template-columns: 1fr; } }
     .step {
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -288,21 +264,9 @@
       font-size: 0.74rem;
       white-space: pre-wrap;
       word-break: break-word;
-      max-height: 170px;
+      max-height: 220px;
       overflow: auto;
     }
-    .feed {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(10, 6, 22, 0.85);
-      padding: 0.55rem;
-      min-height: 100px;
-      max-height: 240px;
-      overflow: auto;
-      font-size: 0.78rem;
-    }
-    .feed-item { padding: 0.35rem 0; border-bottom: 1px solid rgba(60, 40, 90, 0.5); }
-    .feed-item:last-child { border-bottom: none; }
     .warning {
       border-left: 3px solid var(--warn);
       background: rgba(251, 191, 36, 0.08);
@@ -320,74 +284,19 @@
       background: rgba(12, 8, 24, 0.65);
     }
     details.advanced summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; }
-    .panel.staffer-bridge {
-      border-color: rgba(167, 139, 250, 0.4);
-      background: linear-gradient(165deg, rgba(35, 22, 55, 0.95), rgba(14, 10, 28, 0.98));
-    }
-    .staffer-bridge__lead { margin: 0 0 0.35rem; color: var(--text); font-size: 0.88rem; line-height: 1.4; }
-    .staffer-bridge__trust { margin: 0 0 0.5rem; color: var(--ok); font-size: 0.76rem; }
-    .staffer-bridge__status { margin: 0 0 0.55rem; word-break: break-word; }
-    .staffer-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
-    @media (max-width: 520px) {
-      .staffer-actions { flex-direction: column; }
-      .staffer-actions button { width: 100%; }
-    }
-    details.staffer-bridge__details {
-      margin-top: 0.65rem;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.45rem 0.6rem;
-      background: rgba(12, 8, 24, 0.5);
-    }
-    details.staffer-bridge__details summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; }
-    .staffer-bridge__list { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--muted); }
-    .staffer-result { margin-top: 0.55rem; padding: 0.45rem 0.55rem; border-radius: 10px; font-size: 0.82rem; line-height: 1.35; }
-    .staffer-result--ok { border: 1px solid rgba(74, 222, 128, 0.35); background: rgba(20, 50, 35, 0.35); color: var(--ok); }
-    .staffer-result--err { border: 1px solid rgba(251, 113, 133, 0.4); background: rgba(45, 22, 28, 0.35); color: #fecaca; }
-    pre.staffer-out { margin-top: 0.55rem; max-height: 220px; }
-    .pulse-list { display: flex; flex-direction: column; gap: 0.65rem; }
-    .pulse-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.35rem;
-      align-items: center;
-      font-size: 0.8rem;
-    }
-    .pulse-bar {
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(60, 40, 90, 0.6);
-      overflow: hidden;
-      margin-top: 0.25rem;
-    }
-    .pulse-bar > i {
-      display: block;
-      height: 100%;
-      border-radius: 999px;
-      background: var(--gradient-bar);
-      transition: width 0.4s ease;
-    }
-    .outcome-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid rgba(60, 40, 90, 0.4);
-      font-size: 0.8rem;
-    }
-    .outcome-row:last-child { border-bottom: none; }
-    .outcome-row__icon { font-size: 1.1rem; opacity: 0.9; }
+    .row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
   <main>
     <section class="mc-hero">
       <span class="mc-hero__tag">Mission control</span>
-      <h1>Unleash your agent power</h1>
-      <p class="sub">Deploy AI agents on your machine, complete tasks, and track wins — you stay in charge. Cloud-hosted agents may arrive later; today your stack runs locally.</p>
+      <h1>Staffer Mission Control (local)</h1>
+      <p class="sub">Your 4-step flow starts here: pick an agent, complete the Trust Pact, then continue on the <strong>Agents workspace</strong> for local Staffer controls, missions, and Kill Switch.</p>
+      <p class="tiny" style="margin-top:0.35rem">Your Staffer on this device — use GET / CONFIGURE / ACTIVATE on the next screen after you approve.</p>
       <div class="mc-hero__row">
         <button type="button" class="btn-cta" id="btnHeroCta">Get started</button>
-        <p class="mc-hosting-note">Agents you deploy here run on <strong>this device</strong> until you connect a hosted adapter.</p>
+        <p class="mc-hosting-note">Agents to deploy on this page; after approval you’ll be sent to <code>agents.html</code> for steps 3–4.</p>
       </div>
       <div class="mc-stats" aria-label="Your session stats">
         <div class="mc-stat">
@@ -407,7 +316,7 @@
           <div>
             <div class="mc-stat__label">Tasks sent</div>
             <div class="mc-stat__value" id="statKpiMissions">0</div>
-            <div class="mc-stat__hint">From mission queue</div>
+            <div class="mc-stat__hint">After Agents workspace</div>
           </div>
         </div>
         <div class="mc-stat">
@@ -430,89 +339,35 @@
       <p class="next-win" id="nextWin">Complete the flow below to light up your badges.</p>
     </section>
 
-    <section class="panel staffer-bridge" id="stafferLocalPanel" aria-labelledby="stafferBridgeTitle">
-      <h2 id="stafferBridgeTitle">Your Staffer on this device</h2>
-      <p class="staffer-bridge__lead">Set up your boards and profile, or start a clean run — without hunting the terminal first.</p>
-      <p class="tiny staffer-bridge__trust">Runs only on your machine. Hosted UCDC never touches your Staffer project folder.</p>
-      <p class="tiny staffer-bridge__status" id="stafferLocalHint">Checking what’s possible on this page…</p>
-      <div class="staffer-actions" id="stafferLocalButtons">
-        <button type="button" class="secondary" id="btnStafferSetup" disabled title="Runs python run_config.py">Set up</button>
-        <button type="button" class="secondary" id="btnStafferSetupNew" disabled title="Fresh config / overwrite flow">Fresh setup</button>
-        <button type="button" id="btnStafferExecute" disabled title="Runs python main.py --fresh">Run Staffer</button>
-      </div>
-      <details class="staffer-bridge__details">
-        <summary>What each button does</summary>
-        <ul class="tiny staffer-bridge__list">
-          <li><strong>Set up</strong> — your config step (<code>python run_config.py</code>).</li>
-          <li><strong>Fresh setup</strong> — overwrite saved settings (your <code>run_config.py</code> overwrite mode).</li>
-          <li><strong>Run Staffer</strong> — start the app fresh (<code>python main.py --fresh</code>).</li>
-        </ul>
-        <p class="tiny">Needs <code>UCDC_ENABLE_STAFFER_LOCAL_BRIDGE</code> and <code>STAFFER_LOCAL_REPO</code> in your environment. See README.</p>
-      </details>
-      <div id="stafferLocalSummary" class="staffer-result" hidden></div>
-      <pre class="staffer-out" id="stafferLocalOut" hidden></pre>
-    </section>
-
     <section class="panel" id="agentsSection">
-      <h2 class="h2">Agents to deploy</h2>
-      <p class="section-lead">Pick an agent to deploy on your machine. You’ll confirm permission before anything sensitive runs.</p>
+      <h2 class="h2">Step 1 · Agents to deploy</h2>
+      <p class="section-lead">Pick an agent for this device. Before sensitive actions, you must complete an explicit approval checkpoint (Trust Pact).</p>
       <div class="agents-deploy" id="agentGrid"></div>
       <div class="warning">
         Start with <strong>The Staffer</strong> for job applications that match your saved profile. <strong>Miner</strong> earns from shared compute — same permission flow.
       </div>
     </section>
 
-    <section class="panel">
-      <h2>Scoreboard</h2>
-      <div class="kpis">
-        <div class="kpi"><div class="label">Setup</div><div class="value" id="kpiInstalls">0</div><div class="delta">This device</div></div>
-        <div class="kpi"><div class="label">Permissions</div><div class="value" id="kpiPacts">0</div><div class="delta">Green lights</div></div>
-        <div class="kpi"><div class="label">Sends</div><div class="value" id="kpiMissions">0</div><div class="delta">Queued</div></div>
-        <div class="kpi"><div class="label">Pauses</div><div class="value" id="kpiKills">0</div><div class="delta">You stopped it</div></div>
-      </div>
-      <div class="row">
-        <button type="button" class="secondary" id="btnRefreshHealth">Check connections</button>
-      </div>
-      <p class="tiny" id="systemHealth">Connections: checking…</p>
-    </section>
-
-    <div class="layout-2">
-      <section class="panel">
-        <h2>Agent pulse</h2>
-        <p class="section-lead">Live status for agents on this session.</p>
-        <div class="pulse-list" id="pulseList"></div>
-      </section>
-      <section class="panel">
-        <h2>Earnings &amp; outcomes</h2>
-        <p class="section-lead">Gamified snapshot — real payouts connect in a later sprint.</p>
-        <div id="outcomesPanel"></div>
-      </section>
-    </div>
-
-    <div class="layout">
-      <section class="panel">
-        <h2>Behind the scenes</h2>
-        <p class="tiny">URLs fill automatically when this page is served from your local stack.</p>
-        <details class="advanced">
-          <summary>Advanced — connection URLs</summary>
-          <label style="margin-top:0.5rem">Permission service
-            <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
-          </label>
-          <label>Send queue service
-            <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
-          </label>
-          <p class="tiny">Saved in this browser only.</p>
-        </details>
-      </section>
+    <div class="panel">
+      <h2>Behind the scenes</h2>
+      <p class="tiny">URLs fill automatically when this page is served from your local stack.</p>
+      <details class="advanced">
+        <summary>Advanced — connection URLs</summary>
+        <label style="margin-top:0.5rem">Permission service
+          <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
+        </label>
+        <label>Send queue service
+          <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
+        </label>
+        <p class="tiny">Saved in this browser only.</p>
+      </details>
     </div>
 
     <section class="panel" id="consentFlow">
-      <h2>Your 4-step flow</h2>
+      <h2>Step 2 · Approval checkpoint (Trust Pact)</h2>
       <div class="steps">
-        <div class="step active" id="step1">1. Choose agent</div>
-        <div class="step" id="step2">2. Say yes</div>
-        <div class="step" id="step3">3. Run task</div>
-        <div class="step" id="step4">4. Activity · Stop anytime</div>
+        <div class="step active" id="idxStep1">1. Choose agent</div>
+        <div class="step" id="idxStep2">2. Trust Pact</div>
       </div>
       <label>Your nickname on this device <input type="text" id="userId" value="demo-user" /></label>
       <label>Agent id <input type="text" id="agentId" value="" placeholder="Picked when you deploy an agent" /></label>
@@ -524,39 +379,13 @@
       <div class="approval">
         <label>
           <input type="checkbox" id="approvalCheck" />
-          <span>I understand what this agent can do with this permission. I can pause or revoke it whenever I want.</span>
+          <span>This is my approval checkpoint: I understand this permission scope and can trigger Kill Switch any time.</span>
         </label>
       </div>
       <div class="row">
-        <button type="button" id="btnIssue" disabled>Allow &amp; continue</button>
+        <button type="button" id="btnIssue" disabled>Approve &amp; go to Agents workspace</button>
       </div>
       <pre id="outIssue" hidden></pre>
-    </section>
-
-    <div class="layout">
-      <section class="panel">
-        <h2>Send task</h2>
-        <p class="tiny">Optional payload (usually <code>{}</code>).</p>
-        <label>Extra details (JSON) <textarea id="jobData">{}</textarea></label>
-        <div class="row">
-          <button type="button" id="btnJob" disabled>Send now</button>
-        </div>
-        <pre id="outJob" hidden></pre>
-      </section>
-      <section class="panel">
-        <h2>Activity &amp; pause</h2>
-        <div class="row">
-          <button type="button" class="danger" id="btnRevoke" disabled>Pause all · revoke permission</button>
-          <button type="button" class="secondary" id="btnEvents" disabled>Refresh activity log</button>
-        </div>
-        <pre id="outRevoke" hidden></pre>
-        <pre id="outEvents" hidden></pre>
-      </section>
-    </div>
-
-    <section class="panel">
-      <h2>Live feed</h2>
-      <div class="feed" id="eventFeed"></div>
     </section>
   </main>
   <script>
@@ -585,22 +414,13 @@
       },
     ];
 
-    const EVENT_LABELS = {
-      "install.completed": "You’re in",
-      "trust_pact.viewed": "Agent picked",
-      "trust_pact.approval_checkpoint_seen": "You ticked the box",
-      "trust_pact.activated": "Permission on",
-      "mission.launch_requested": "Send queued",
-      "mission.failed": "Send didn’t go through",
-      "mission.launch_accepted": "Send accepted",
-      "kill_switch.triggered": "You paused everything",
-      "proof_ledger.event_recorded": "Activity refreshed",
-      "service.health_snapshot": "Connection check",
-    };
+    const SESSION_KEY = "ucdc_mc_session";
+    const AGENTS_KEY = "ucdc_mc_agents";
 
     const state = {
       consentId: null,
       consentToken: null,
+      stafferApprovalId: null,
       resources: [],
       stats: {
         installs: 1,
@@ -608,22 +428,26 @@
         missions: 0,
         kills: 0,
       },
-      events: [],
     };
 
-    function persistState() {
+    function persistStats() {
       localStorage.setItem("ucdc_mc_stats", JSON.stringify(state.stats));
-      localStorage.setItem("ucdc_mc_events", JSON.stringify(state.events));
     }
 
     function loadState() {
       try {
         const stats = JSON.parse(localStorage.getItem("ucdc_mc_stats") || "{}");
-        const events = JSON.parse(localStorage.getItem("ucdc_mc_events") || "[]");
         state.stats = { ...state.stats, ...stats };
-        if (Array.isArray(events)) {
-          state.events = events.slice(0, 30);
-        }
+      } catch (_) {}
+      try {
+        const raw = localStorage.getItem(AGENTS_KEY);
+        if (!raw) return;
+        const snaps = JSON.parse(raw);
+        if (!Array.isArray(snaps)) return;
+        snaps.forEach((snap) => {
+          const a = agents.find((x) => x.id === snap.id);
+          if (a && typeof snap.active === "boolean") a.active = snap.active;
+        });
       } catch (_) {}
     }
 
@@ -635,31 +459,8 @@
       }
     }
 
-    function appendEvent(type, details) {
-      const stamp = new Date().toLocaleTimeString();
-      state.events.unshift({ stamp, type, details });
-      state.events = state.events.slice(0, 30);
-      persistState();
-      renderFeed();
-    }
-
-    function labelForEventType(type) {
-      return EVENT_LABELS[type] || type.replace(/\./g, " · ");
-    }
-
-    function renderFeed() {
-      const root = $("eventFeed");
-      if (!state.events.length) {
-        root.innerHTML = '<div class="feed-item">Nothing here yet — deploy <strong>The Staffer</strong> and allow permission to see your first win.</div>';
-        return;
-      }
-      root.innerHTML = state.events.map((e) => (
-        '<div class="feed-item"><strong>' + e.stamp + "</strong> · " + labelForEventType(e.type) + "<br><span class=\"tiny\">" + e.details + "</span></div>"
-      )).join("");
-    }
-
-    function setStep(active) {
-      ["step1", "step2", "step3", "step4"].forEach((id, idx) => {
+    function setIdxStep(active) {
+      ["idxStep1", "idxStep2"].forEach((id, idx) => {
         $(id).classList.toggle("active", idx < active);
       });
     }
@@ -680,9 +481,9 @@
       if (s.trustPacts < 1) {
         nw.textContent = "Next win: allow permission — then your “Permission unlocked” badge lights up.";
       } else if (s.missions < 1) {
-        nw.textContent = "Next win: tap Send now — unlock “First send”.";
+        nw.textContent = "Open the Agents workspace to send your first mission.";
       } else if (s.kills < 1) {
-        nw.textContent = "Optional: try Pause to unlock “You hit pause”.";
+        nw.textContent = "Optional: try Pause on the Agents workspace.";
       } else {
         nw.textContent = "You’ve cleared the board. Come back anytime.";
       }
@@ -699,49 +500,9 @@
     }
 
     function updateKpis() {
-      $("kpiInstalls").textContent = String(state.stats.installs);
-      $("kpiPacts").textContent = String(state.stats.trustPacts);
-      $("kpiMissions").textContent = String(state.stats.missions);
-      $("kpiKills").textContent = String(state.stats.kills);
       updateHeroStats();
       updateBadgesAndHint();
-      updatePulseAndOutcomes();
-      persistState();
-    }
-
-    function progressForAgent(agent) {
-      if (!agent.active) return 8;
-      if (state.stats.missions > 0) return 72;
-      return 38;
-    }
-
-    function pulseLabel(agent) {
-      if (!agent.active) return "Idle · deploy to start";
-      if (state.stats.missions > 0) return "Task in flight";
-      return "Permission on · ready to send";
-    }
-
-    function updatePulseAndOutcomes() {
-      const pulse = $("pulseList");
-      const out = $("outcomesPanel");
-      if (!pulse || !out) return;
-      pulse.innerHTML = agents.map((a) => {
-        const pct = progressForAgent(a);
-        return (
-          '<div>' +
-          '<div class="pulse-row"><span>' + a.name + "</span><span class=\"tiny\">" + pulseLabel(a) + "</span></div>" +
-          '<div class="pulse-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
-          "</div>"
-        );
-      }).join("");
-      const demo = state.stats.missions * 250;
-      out.innerHTML =
-        '<div class="outcome-row"><span class="outcome-row__icon" aria-hidden="true">💼</span><div><strong>The Staffer</strong><br><span class="tiny">' +
-        (state.stats.missions > 0 ? state.stats.missions + " task(s) queued" : "Waiting for first send") +
-        "</span></div></div>" +
-        '<div class="outcome-row"><span class="outcome-row__icon" aria-hidden="true">⛏️</span><div><strong>Miner</strong><br><span class="tiny">Compute track · demo " +
-        formatInr(demo) +
-        '"</span></div></div>';
+      persistStats();
     }
 
     function renderAgents() {
@@ -803,13 +564,45 @@
         $("explanation").value =
           "I want Miner to run compute-earn work with the limits I set here, and I can stop it anytime.";
       }
-      appendEvent("trust_pact.viewed", "You chose " + agent.name + ". Next: scroll down and allow permission.");
-      setStep(2);
+      setIdxStep(2);
       $("consentFlow").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function parseResources() {
       return $("resources").value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    }
+
+    function getStafferAgentId() {
+      const featured = agents.find((a) => a.featured);
+      return featured ? featured.id : "the-staffer";
+    }
+
+    function isStafferAgent(agentId) {
+      const normalized = (agentId || "").trim();
+      return normalized === getStafferAgentId() || normalized === "the-staffer";
+    }
+
+    async function createStafferApprovalCheckpoint(agentId) {
+      if (!isStafferAgent(agentId) || !state.consentToken) {
+        return null;
+      }
+      const base = $("orchBase").value.replace(/\/$/, "");
+      const r = await fetch(base + "/staffer/approvals/checkpoint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          consent_token: state.consentToken,
+          approved: true,
+          reason: "UI approval checkpoint",
+        }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        const detail = data.detail ? JSON.stringify(data.detail) : r.statusText;
+        throw new Error("Approval checkpoint failed: " + detail);
+      }
+      state.stafferApprovalId = data.approval_id || null;
+      return state.stafferApprovalId;
     }
 
     async function loadBasesFromEnv() {
@@ -831,12 +624,6 @@
     function saveBases() {
       localStorage.setItem("ucdc_consent_base", $("consentBase").value.trim());
       localStorage.setItem("ucdc_orch_base", $("orchBase").value.trim());
-    }
-
-    function showPre(id, obj) {
-      const el = $(id);
-      el.hidden = false;
-      el.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
     }
 
     function refreshIssueState() {
@@ -865,94 +652,33 @@
 
       state.consentId = data.consent_id;
       state.consentToken = data.consent_token;
+      state.stafferApprovalId = null;
       state.stats.trustPacts += 1;
+      persistStats();
       updateKpis();
-      showPre("outIssue", data);
-      $("btnJob").disabled = false;
-      $("btnRevoke").disabled = false;
-      $("btnEvents").disabled = false;
+
+      if (isStafferAgent(body.agent_id)) {
+        await createStafferApprovalCheckpoint(body.agent_id);
+      }
       const active = agents.find((a) => a.id === body.agent_id);
       if (active) active.active = true;
       renderAgents();
-      appendEvent("trust_pact.activated", "You’re good to go for " + body.agent_id + ". You can send tasks below.");
-      setStep(3);
-    }
 
-    async function launchMission() {
-      saveBases();
-      let extra = {};
-      try {
-        extra = JSON.parse($("jobData").value || "{}");
-      } catch (e) {
-        showPre("outJob", "Extra details need valid JSON. Tip: use {} if unsure. (" + e.message + ")");
-        return;
-      }
-      const manifest = {
-        agent_id: $("agentId").value.trim(),
-        resources: state.resources.length ? state.resources : parseResources(),
-        data: extra,
+      const sessionPayload = {
+        consentId: state.consentId,
+        consentToken: state.consentToken,
+        stafferApprovalId: state.stafferApprovalId,
+        agentId: body.agent_id,
+        resources: state.resources,
+        userId: body.user_id,
       };
-      const base = $("orchBase").value.replace(/\/$/, "");
-      appendEvent("mission.launch_requested", "Queueing a send for " + manifest.agent_id + ".");
-      const r = await fetch(base + "/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consent_token: state.consentToken, job_manifest: manifest }),
-      });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok && r.status !== 202) {
-        appendEvent("mission.failed", "Couldn’t queue send for " + manifest.agent_id + ".");
-        throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
-      }
-      state.stats.missions += 1;
-      updateKpis();
-      showPre("outJob", { ...data, httpStatus: r.status });
-      appendEvent("mission.launch_accepted", "Send accepted for " + manifest.agent_id + " (status " + r.status + ").");
-      setStep(4);
-    }
+      localStorage.setItem(SESSION_KEY, JSON.stringify(sessionPayload));
+      localStorage.setItem(
+        AGENTS_KEY,
+        JSON.stringify(agents.map((a) => ({ id: a.id, active: a.active, featured: a.featured }))),
+      );
 
-    async function killSwitch() {
-      saveBases();
-      const base = $("consentBase").value.replace(/\/$/, "");
-      const r = await fetch(base + "/consents/" + encodeURIComponent(state.consentId) + "/revoke", { method: "POST" });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
-      state.stats.kills += 1;
-      updateKpis();
-      showPre("outRevoke", data);
-      appendEvent("kill_switch.triggered", "All sends paused for this permission (" + state.consentId + ").");
-    }
-
-    async function refreshProofLedger() {
-      saveBases();
-      const base = $("consentBase").value.replace(/\/$/, "");
-      const r = await fetch(base + "/consents/" + encodeURIComponent(state.consentId) + "/events");
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
-      showPre("outEvents", data);
-      const count = Array.isArray(data) ? data.length : 0;
-      appendEvent("proof_ledger.event_recorded", "Loaded " + count + " past event(s) from the log.");
-    }
-
-    async function refreshHealth() {
-      saveBases();
-      const consentBase = $("consentBase").value.replace(/\/$/, "");
-      const orchBase = $("orchBase").value.replace(/\/$/, "");
-      let consent = "down";
-      let orch = "down";
-      try {
-        const r1 = await fetch(consentBase + "/health");
-        if (r1.ok) consent = "ok";
-      } catch (_) {}
-      try {
-        const r2 = await fetch(orchBase + "/health");
-        if (r2.ok) orch = "ok";
-      } catch (_) {}
-      const line =
-        "Permission service: " + (consent === "ok" ? "connected" : "offline") +
-        " · Send queue: " + (orch === "ok" ? "connected" : "offline");
-      $("systemHealth").textContent = line;
-      appendEvent("service.health_snapshot", line);
+      window.location.href = "agents.html";
     }
 
     $("btnHeroCta").addEventListener("click", () => {
@@ -962,105 +688,21 @@
     ["consentBase", "orchBase"].forEach((id) => $(id).addEventListener("change", saveBases));
     $("approvalCheck").addEventListener("change", refreshIssueState);
     $("agentId").addEventListener("input", refreshIssueState);
-    $("btnIssue").addEventListener("click", () => issueConsent().catch((e) => showPre("outIssue", String(e.message || e))));
-    $("btnJob").addEventListener("click", () => launchMission().catch((e) => showPre("outJob", String(e.message || e))));
-    $("btnRevoke").addEventListener("click", () => killSwitch().catch((e) => showPre("outRevoke", String(e.message || e))));
-    $("btnEvents").addEventListener("click", () => refreshProofLedger().catch((e) => showPre("outEvents", String(e.message || e))));
-    $("btnRefreshHealth").addEventListener("click", () => refreshHealth().catch((e) => $("systemHealth").textContent = String(e.message || e)));
-
-    async function refreshStafferLocalUi() {
-      const hint = $("stafferLocalHint");
-      try {
-        const r = await fetch("/local-staffer/status");
-        if (!r.ok) throw new Error(r.statusText);
-        const s = await r.json();
-        hint.textContent = s.enabled
-          ? s.message + (s.repo_path ? " · " + s.repo_path : "")
-          : s.message;
-        const on = !!s.enabled;
-        $("btnStafferSetup").disabled = !on;
-        $("btnStafferSetupNew").disabled = !on;
-        $("btnStafferExecute").disabled = !on;
-      } catch (_) {
-        hint.textContent =
-          "Open this page from your machine’s consent URL (for example http://127.0.0.1:8001/ui/) so these actions can reach your Staffer folder.";
-        $("btnStafferSetup").disabled = true;
-        $("btnStafferSetupNew").disabled = true;
-        $("btnStafferExecute").disabled = true;
-      }
-    }
-
-    function showStafferOut(data) {
-      const pre = $("stafferLocalOut");
-      const sum = $("stafferLocalSummary");
-      if (data == null) {
-        sum.hidden = true;
-        pre.hidden = true;
-        return;
-      }
-      if (typeof data !== "object") {
-        sum.hidden = true;
-        pre.hidden = false;
-        pre.textContent = String(data);
-        return;
-      }
-      if (data.httpStatus != null && data.detail != null) {
-        sum.hidden = false;
-        sum.className = "staffer-result staffer-result--err";
-        const d = data.detail;
-        sum.textContent =
-          "Couldn’t run that — " + (typeof d === "string" ? d : "check the server or your .env.");
-        pre.hidden = false;
-        pre.textContent = JSON.stringify(data, null, 2);
-        return;
-      }
-      sum.hidden = false;
-      sum.className = "staffer-result " + (data.ok ? "staffer-result--ok" : "staffer-result--err");
-      sum.textContent = data.ok
-        ? "That step finished. Move on or tap the next action."
-        : "That command reported an error — read the lines below.";
-      pre.hidden = false;
-      pre.textContent = JSON.stringify(data, null, 2);
-    }
-
-    async function postStafferAction(path, label) {
-      const hint = $("stafferLocalHint");
-      const prev = hint.textContent;
-      $("stafferLocalSummary").hidden = true;
-      $("stafferLocalOut").hidden = true;
-      hint.textContent = "Working on " + label + "…";
-      try {
-        const r = await fetch(path, { method: "POST" });
-        const data = await r.json().catch(() => ({}));
-        if (!r.ok) {
-          showStafferOut({ httpStatus: r.status, detail: data.detail || r.statusText });
-          hint.textContent = prev;
-          await refreshStafferLocalUi();
-          return;
-        }
-        showStafferOut(data);
-        hint.textContent = prev;
-      } catch (e) {
-        showStafferOut(String(e.message || e));
-        hint.textContent = prev;
-      }
-      await refreshStafferLocalUi();
-    }
-
-    $("btnStafferSetup").addEventListener("click", () => postStafferAction("/local-staffer/setup", "Set up"));
-    $("btnStafferSetupNew").addEventListener("click", () => postStafferAction("/local-staffer/setup-new", "Fresh setup"));
-    $("btnStafferExecute").addEventListener("click", () => postStafferAction("/local-staffer/execute", "Run Staffer"));
+    $("btnIssue").addEventListener("click", () =>
+      issueConsent().catch((e) => {
+        const el = $("outIssue");
+        el.hidden = false;
+        el.textContent = String(e.message || e);
+      }),
+    );
 
     (async function initMissionControl() {
       await loadBasesFromEnv();
       loadState();
       renderAgents();
       updateKpis();
-      renderFeed();
-      appendEvent("install.completed", "Dashboard ready on this device.");
-      await refreshHealth();
-      await refreshStafferLocalUi();
       refreshIssueState();
+      setIdxStep(1);
     })();
   </script>
 </body>

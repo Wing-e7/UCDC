@@ -32,6 +32,7 @@ services:
       # Optional: mount Staffer into the container and set STAFFER_LOCAL_REPO to that path for /ui one-tap Staffer.
       UCDC_ENABLE_STAFFER_LOCAL_BRIDGE: ${UCDC_ENABLE_STAFFER_LOCAL_BRIDGE:-false}
       STAFFER_LOCAL_REPO: ${STAFFER_LOCAL_REPO:-}
+      STAFFER_GIT_URL: ${STAFFER_GIT_URL:-}
       RUN_DB_MIGRATIONS: "true"
     command: ["uvicorn", "ucdc.consent_api:app", "--host", "0.0.0.0", "--port", "8001"]
     ports:
@@ -53,6 +54,8 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       AGENT_ADAPTER_BASE_URL: ${AGENT_ADAPTER_BASE_URL:-http://agent_adapter_service:8003}
       UCDC_ASYNC_JOBS: ${UCDC_ASYNC_JOBS:-false}
+      UCDC_ENABLE_STAFFER_EXECUTION: ${UCDC_ENABLE_STAFFER_EXECUTION:-false}
+      UCDC_STAFFER_AGENT_ID: ${UCDC_STAFFER_AGENT_ID:-the-staffer}
       RUN_DB_MIGRATIONS: "false"
     command: ["uvicorn", "ucdc.orchestrator_api:app", "--host", "0.0.0.0", "--port", "8002"]
     ports:

@@ -64,7 +64,11 @@ class Settings(BaseSettings):
     default_agent_id: str = Field(default="example-agent", validation_alias="UCDC_DEFAULT_AGENT_ID")
     # Optional: one-click Staffer CLI from /ui (subprocess in STAFFER_LOCAL_REPO). Off by default; never use in production.
     enable_staffer_local_bridge: bool = Field(default=False, validation_alias="UCDC_ENABLE_STAFFER_LOCAL_BRIDGE")
+    # Feature flag for Staffer execution checkpoint flow in /jobs.
+    enable_staffer_execution: bool = Field(default=False, validation_alias="UCDC_ENABLE_STAFFER_EXECUTION")
+    staffer_agent_id: str = Field(default="the-staffer", validation_alias="UCDC_STAFFER_AGENT_ID")
     staffer_local_repo: str = Field(default="", validation_alias="STAFFER_LOCAL_REPO")
+    staffer_git_url: str = Field(default="", validation_alias="STAFFER_GIT_URL")
     staffer_cmd_setup: str = Field(default="python run_config.py", validation_alias="UCDC_STAFFER_CMD_SETUP")
     staffer_cmd_setup_new: str = Field(
         default="python run_config.py --overwrite",

@@ -14,7 +14,14 @@ from .schemas import StafferLocalRunOut, StafferLocalStatus
 
 logger = logging.getLogger("ucdc")
 
-StafferAction = Literal["setup", "setup_new", "execute"]
+StafferAction = Literal["get", "setup", "setup_new", "execute"]
+
+
+def _resolve_repo_path(s: Settings) -> Path | None:
+    raw = (s.staffer_local_repo or "").strip()
+    if not raw:
+        return None
+    return Path(raw).expanduser().resolve()
 
 
 def _bridge_state(s: Settings) -> tuple[bool, str, str | None]:
@@ -31,17 +38,18 @@ def _bridge_state(s: Settings) -> tuple[bool, str, str | None]:
             "One-tap Staffer is off. Add UCDC_ENABLE_STAFFER_LOCAL_BRIDGE and STAFFER_LOCAL_REPO to your .env, then restart the consent server.",
             None,
         )
-    raw = (s.staffer_local_repo or "").strip()
-    if not raw:
+    repo_path = _resolve_repo_path(s)
+    if not repo_path:
         return (
             False,
             "Point STAFFER_LOCAL_REPO at your Staffer project (the folder with main.py and run_config.py).",
             None,
         )
-    p = Path(raw).expanduser().resolve()
-    if not p.is_dir():
-        return False, f"That path isn’t a folder: {p}", None
-    return True, "Ready — we’ll run commands in your Staffer project on this machine.", str(p)
+    if repo_path.exists() and not repo_path.is_dir():
+        return False, f"That path exists but is not a folder: {repo_path}", None
+    if not repo_path.exists():
+        return True, "Staffer is not downloaded yet. Tap GET STAFFER to clone it on this machine.", str(repo_path)
+    return True, "Ready — we’ll run commands in your Staffer project on this machine.", str(repo_path)
 
 
 def is_staffer_local_bridge_enabled() -> bool:
@@ -56,23 +64,8 @@ def get_staffer_local_status() -> StafferLocalStatus:
     return StafferLocalStatus(enabled=ok, repo_path=repo, message=msg)
 
 
-def run_staffer_action(action: StafferAction) -> StafferLocalRunOut:
-    s = get_settings()
-    ok, msg, repo = _bridge_state(s)
-    if not ok or not repo:
-        raise RuntimeError(msg)
-
-    cmd_map: dict[StafferAction, str] = {
-        "setup": s.staffer_cmd_setup,
-        "setup_new": s.staffer_cmd_setup_new,
-        "execute": s.staffer_cmd_execute,
-    }
-    cmd = cmd_map[action]
-    timeout = s.staffer_cmd_timeout_execute if action == "execute" else s.staffer_cmd_timeout_setup
-    # Windows vs POSIX: split so paths and flags parse correctly on each OS.
-    args = shlex.split(cmd, posix=(os.name == "posix"))
-    cwd = repo
-    logger.info("staffer_local_bridge: cwd=%s cmd=%s", cwd, cmd)
+def _run_command(*, args: list[str], cwd: str, timeout: int, command_label: str) -> StafferLocalRunOut:
+    logger.info("staffer_local_bridge: cwd=%s cmd=%s", cwd, command_label)
     try:
         proc = subprocess.run(
             args,
@@ -88,15 +81,74 @@ def run_staffer_action(action: StafferAction) -> StafferLocalRunOut:
             returncode=-1,
             stdout=e.stdout or "",
             stderr=(e.stderr or "") + f"\n[timeout after {timeout}s]",
-            command=cmd,
+            command=command_label,
         )
     except OSError as e:
-        return StafferLocalRunOut(ok=False, returncode=-1, stdout="", stderr=str(e), command=cmd)
-
+        return StafferLocalRunOut(ok=False, returncode=-1, stdout="", stderr=str(e), command=command_label)
     return StafferLocalRunOut(
         ok=proc.returncode == 0,
         returncode=proc.returncode,
         stdout=proc.stdout or "",
         stderr=proc.stderr or "",
-        command=cmd,
+        command=command_label,
+    )
+
+
+def run_staffer_action(action: StafferAction) -> StafferLocalRunOut:
+    s = get_settings()
+    ok, msg, repo = _bridge_state(s)
+    if not ok or not repo:
+        raise RuntimeError(msg)
+
+    repo_path = Path(repo)
+    if action == "get":
+        git_url = (s.staffer_git_url or "").strip()
+        if not git_url:
+            return StafferLocalRunOut(
+                ok=False,
+                returncode=-1,
+                stdout="",
+                stderr="Set STAFFER_GIT_URL in your environment so UCDC knows where to clone Staffer from.",
+                command="git clone",
+            )
+        if repo_path.exists() and (repo_path / ".git").is_dir():
+            args = ["git", "-C", str(repo_path), "pull", "--ff-only"]
+            return _run_command(
+                args=args,
+                cwd=str(repo_path),
+                timeout=s.staffer_cmd_timeout_setup,
+                command_label="git -C <repo> pull --ff-only",
+            )
+        repo_path.parent.mkdir(parents=True, exist_ok=True)
+        args = ["git", "clone", git_url, str(repo_path)]
+        return _run_command(
+            args=args,
+            cwd=str(repo_path.parent),
+            timeout=s.staffer_cmd_timeout_setup,
+            command_label=f"git clone {git_url} {repo_path}",
+        )
+
+    if not repo_path.is_dir():
+        return StafferLocalRunOut(
+            ok=False,
+            returncode=-1,
+            stdout="",
+            stderr=f"Staffer folder not found at {repo_path}. Tap GET STAFFER first.",
+            command="",
+        )
+
+    cmd_map = {
+        "setup": s.staffer_cmd_setup,
+        "setup_new": s.staffer_cmd_setup_new,
+        "execute": s.staffer_cmd_execute,
+    }
+    cmd = cmd_map[action]
+    timeout = s.staffer_cmd_timeout_execute if action == "execute" else s.staffer_cmd_timeout_setup
+    # Windows vs POSIX: split so paths and flags parse correctly on each OS.
+    args = shlex.split(cmd, posix=(os.name == "posix"))
+    return _run_command(
+        args=args,
+        cwd=str(repo_path),
+        timeout=timeout,
+        command_label=cmd,
     )

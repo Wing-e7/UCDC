@@ -13,6 +13,17 @@ def test_ui_index_served():
         assert "your staffer on this device" in text
         assert "agents to deploy" in text
         assert "miner" in text
+        assert "trust pact" in text
+
+
+def test_ui_agents_workspace_served():
+    with TestClient(consent_app) as client:
+        r = client.get("/ui/agents.html")
+        assert r.status_code == 200
+        text = r.text.lower()
+        assert "agents workspace" in text
+        assert "local-staffer" in text or "get staffer" in text
+        assert "miner" in text
 
 
 def test_public_config_exposes_urls_without_secrets():

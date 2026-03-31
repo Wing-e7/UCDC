@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agents workspace — UCDC</title>
+  <style>
+    :root {
+      --bg: #0a0614;
+      --bg-mid: #120a1c;
+      --panel: rgba(22, 14, 38, 0.92);
+      --panel-2: rgba(14, 10, 28, 0.95);
+      --text: #f4f0ff;
+      --muted: #a59bbf;
+      --violet: #8b5cf6;
+      --violet-d: #6d28d9;
+      --orange: #ea580c;
+      --amber: #fb923c;
+      --ok: #4ade80;
+      --danger: #fb7185;
+      --warn: #fcd34d;
+      --border: rgba(139, 92, 246, 0.28);
+      --glass: rgba(30, 20, 50, 0.55);
+      --gradient-hero: linear-gradient(135deg, rgba(124, 58, 237, 0.35) 0%, rgba(234, 88, 12, 0.2) 50%, rgba(15, 10, 30, 0.9) 100%);
+      --gradient-cta: linear-gradient(120deg, #a855f7, #ea580c);
+      --gradient-bar: linear-gradient(90deg, #a855f7, #f97316);
+      font-family: "DM Sans", Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(1000px 600px at 80% -10%, rgba(109, 40, 217, 0.35), transparent),
+        radial-gradient(800px 500px at 10% 20%, rgba(234, 88, 12, 0.12), transparent),
+        var(--bg);
+      line-height: 1.45;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 1rem 1rem 3rem; }
+    .mc-hero {
+      position: relative;
+      border-radius: 20px;
+      padding: 1.35rem 1.25rem 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-hero);
+      border: 1px solid var(--border);
+      box-shadow: 0 0 40px rgba(109, 40, 217, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+    .mc-hero__tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--amber);
+      margin-bottom: 0.35rem;
+    }
+    .mc-hero h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 4vw, 1.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .mc-hero .sub {
+      margin: 0.5rem 0 1rem;
+      color: var(--muted);
+      font-size: 0.94rem;
+      max-width: 36rem;
+    }
+    .mc-hero__row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    a.mc-back {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--amber);
+      text-decoration: none;
+      border: 1px solid rgba(251, 146, 60, 0.45);
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      background: rgba(20, 12, 35, 0.6);
+    }
+    a.mc-back:hover { filter: brightness(1.08); }
+    .mc-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    @media (max-width: 640px) { .mc-stats { grid-template-columns: 1fr; } }
+    .mc-stat {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 12px;
+      background: var(--glass);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    .mc-stat__icon { flex-shrink: 0; opacity: 0.95; }
+    .mc-stat__label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .mc-stat__value { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-top: 0.1rem; }
+    .mc-stat__hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0.85rem 0 0.35rem;
+    }
+    .badge-g {
+      font-size: 0.72rem;
+      border-radius: 999px;
+      padding: 0.28rem 0.55rem;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: var(--muted);
+      background: rgba(20, 12, 35, 0.6);
+      opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .badge-g.unlocked {
+      opacity: 1;
+      border-color: rgba(74, 222, 128, 0.5);
+      color: var(--ok);
+    }
+    .next-win { font-size: 0.8rem; color: var(--amber); margin: 0.35rem 0 0; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 1rem;
+      margin-bottom: 0.9rem;
+      backdrop-filter: blur(8px);
+    }
+    .panel h2, .panel .h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+    .section-lead {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: -0.35rem 0 0.85rem;
+      line-height: 1.4;
+    }
+    .kpis { display: grid; gap: 0.55rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 0.8rem; }
+    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .kpi {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-2);
+      padding: 0.55rem 0.6rem;
+    }
+    .kpi .label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi .value { font-size: 1.2rem; font-weight: 800; margin-top: 0.1rem; }
+    .kpi .delta { font-size: 0.74rem; color: var(--muted); }
+    .agents-deploy {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .agent-card {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: linear-gradient(165deg, rgba(30, 20, 55, 0.9), rgba(12, 8, 24, 0.98));
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
+    }
+    .agent-card--staffer { border-color: rgba(167, 139, 250, 0.4); }
+    .agent-card--miner { border-color: rgba(251, 146, 60, 0.35); }
+    .agent-card__visual { height: 148px; position: relative; overflow: hidden; }
+    .agent-card--staffer .agent-card__visual {
+      background: linear-gradient(180deg, rgba(45, 35, 75, 0.5), rgba(15, 10, 30, 0.95));
+    }
+    .agent-card--miner .agent-card__visual {
+      background: linear-gradient(180deg, rgba(55, 35, 25, 0.5), rgba(15, 10, 25, 0.95));
+    }
+    .agent-card__photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 15%;
+      display: block;
+    }
+    .agent-card__body { padding: 0.75rem 0.9rem 1rem; flex: 1; display: flex; flex-direction: column; }
+    .agent-card__tag {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--amber);
+      margin-bottom: 0.25rem;
+    }
+    .agent-card h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+    .agent-card__persona { font-size: 0.78rem; color: var(--violet); margin: 0.2rem 0 0.35rem; }
+    .agent-card p { margin: 0 0 0.75rem; color: var(--muted); font-size: 0.82rem; line-height: 1.4; flex: 1; }
+    .agent-card .status {
+      display: inline-block;
+      font-size: 0.68rem;
+      border-radius: 999px;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .agent-card .status.live { color: var(--ok); border-color: rgba(74, 222, 128, 0.5); }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 0.48rem 0.9rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      background: var(--gradient-cta);
+      color: #fff;
+    }
+    button.secondary {
+      background: rgba(45, 35, 75, 0.9);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--text);
+    }
+    button.danger { background: linear-gradient(130deg, #fb7185, #be123c); color: #fff; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .layout { display: grid; gap: 0.85rem; grid-template-columns: 1.2fr 1fr; }
+    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+    .layout-2 { display: grid; gap: 0.85rem; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 720px) { .layout-2 { grid-template-columns: 1fr; } }
+    .row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    label { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.75rem; }
+    input, textarea, select {
+      width: 100%;
+      margin-top: 0.18rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(10, 6, 20, 0.8);
+      color: var(--text);
+      padding: 0.42rem 0.52rem;
+      font-size: 0.85rem;
+    }
+    textarea { min-height: 3.6rem; resize: vertical; }
+    .tiny { color: var(--muted); font-size: 0.75rem; margin: 0.2rem 0; }
+    .steps { display: grid; gap: 0.45rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0.7rem; }
+    @media (max-width: 680px) { .steps { grid-template-columns: 1fr; } }
+    .step {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.45rem;
+      background: rgba(12, 8, 24, 0.8);
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+    .step.active { border-color: rgba(167, 139, 250, 0.65); color: var(--text); }
+    pre {
+      margin: 0.52rem 0 0;
+      border: 1px solid var(--border);
+      background: rgba(8, 5, 18, 0.9);
+      border-radius: 10px;
+      padding: 0.55rem;
+      font-size: 0.74rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 170px;
+      overflow: auto;
+    }
+    .feed {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(10, 6, 22, 0.85);
+      padding: 0.55rem;
+      min-height: 100px;
+      max-height: 240px;
+      overflow: auto;
+      font-size: 0.78rem;
+    }
+    .feed-item { padding: 0.35rem 0; border-bottom: 1px solid rgba(60, 40, 90, 0.5); }
+    .feed-item:last-child { border-bottom: none; }
+    .warning {
+      border-left: 3px solid var(--warn);
+      background: rgba(251, 191, 36, 0.08);
+      padding: 0.5rem 0.65rem;
+      border-radius: 0 10px 10px 0;
+      color: #fde68a;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+    }
+    details.advanced {
+      margin-top: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.5rem 0.65rem;
+      background: rgba(12, 8, 24, 0.65);
+    }
+    details.advanced summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; }
+    .panel.staffer-bridge {
+      border-color: rgba(167, 139, 250, 0.4);
+      background: linear-gradient(165deg, rgba(35, 22, 55, 0.95), rgba(14, 10, 28, 0.98));
+    }
+    .staffer-bridge__lead { margin: 0 0 0.35rem; color: var(--text); font-size: 0.88rem; line-height: 1.4; }
+    .staffer-bridge__trust { margin: 0 0 0.5rem; color: var(--ok); font-size: 0.76rem; }
+    .staffer-bridge__status { margin: 0 0 0.55rem; word-break: break-word; }
+    .staffer-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
+    @media (max-width: 520px) {
+      .staffer-actions { flex-direction: column; }
+      .staffer-actions button { width: 100%; }
+    }
+    details.staffer-bridge__details {
+      margin-top: 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.45rem 0.6rem;
+      background: rgba(12, 8, 24, 0.5);
+    }
+    details.staffer-bridge__details summary { cursor: pointer; color: var(--muted); font-size: 0.8rem; }
+    .staffer-bridge__list { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--muted); }
+    .staffer-result { margin-top: 0.55rem; padding: 0.45rem 0.55rem; border-radius: 10px; font-size: 0.82rem; line-height: 1.35; }
+    .staffer-result--ok { border: 1px solid rgba(74, 222, 128, 0.35); background: rgba(20, 50, 35, 0.35); color: var(--ok); }
+    .staffer-result--err { border: 1px solid rgba(251, 113, 133, 0.4); background: rgba(45, 22, 28, 0.35); color: #fecaca; }
+    pre.staffer-out { margin-top: 0.55rem; max-height: 220px; }
+    .pulse-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .pulse-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.35rem;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+    .pulse-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(60, 40, 90, 0.6);
+      overflow: hidden;
+      margin-top: 0.25rem;
+    }
+    .pulse-bar > i {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--gradient-bar);
+      transition: width 0.4s ease;
+    }
+    .outcome-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(60, 40, 90, 0.4);
+      font-size: 0.8rem;
+    }
+    .outcome-row:last-child { border-bottom: none; }
+    .outcome-row__icon { font-size: 1.1rem; opacity: 0.9; }
+    .session-gate {
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      background: rgba(45, 35, 20, 0.35);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.88rem;
+    }
+    .session-gate a { color: var(--amber); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="mc-hero">
+      <span class="mc-hero__tag">After Trust Pact</span>
+      <h1>Agents workspace</h1>
+      <p class="sub">Run local Staffer actions, monitor agents, launch missions, and use Kill Switch. Return to Mission Control if you need another Trust Pact.</p>
+      <div class="mc-hero__row">
+        <a class="mc-back" href="index.html">← Mission Control home</a>
+      </div>
+      <div class="mc-stats" aria-label="Your session stats">
+        <div class="mc-stat">
+          <span class="mc-stat__icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z" stroke="#a78bfa" stroke-width="1.5"/><path d="M4 20a8 8 0 0116 0" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+          <div>
+            <div class="mc-stat__label">This device</div>
+            <div class="mc-stat__value" id="statKpiInstalls">1</div>
+            <div class="mc-stat__hint">Session ready</div>
+          </div>
+        </div>
+        <div class="mc-stat">
+          <span class="mc-stat__icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#4ade80" stroke-width="1.2" opacity="0.5"/></svg>
+          </span>
+          <div>
+            <div class="mc-stat__label">Tasks sent</div>
+            <div class="mc-stat__value" id="statKpiMissions">0</div>
+            <div class="mc-stat__hint">From mission queue</div>
+          </div>
+        </div>
+        <div class="mc-stat">
+          <span class="mc-stat__icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fb923c" stroke-width="1.2"/><path d="M12 7v5l3 2" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+          <div>
+            <div class="mc-stat__label">Rewards track</div>
+            <div class="mc-stat__value" id="statKpiRewards">₹0</div>
+            <div class="mc-stat__hint">Demo tally · payouts later</div>
+          </div>
+        </div>
+      </div>
+      <div class="badge-row" id="badgeRow" aria-label="Your wins">
+        <span class="badge-g unlocked" id="badgeSetup">Setup seen</span>
+        <span class="badge-g" id="badgeAllow">Permission unlocked</span>
+        <span class="badge-g" id="badgeSend">First send</span>
+        <span class="badge-g" id="badgePause">You hit pause</span>
+      </div>
+      <p class="next-win" id="nextWin">Load your session to continue.</p>
+    </section>
+
+    <div id="sessionGate" class="session-gate" hidden>
+      No active Trust Pact session in this browser. <a href="index.html">Open Mission Control</a> to choose an agent and complete the approval checkpoint.
+    </div>
+
+    <section class="panel staffer-bridge" id="stafferLocalPanel" aria-labelledby="stafferBridgeTitle">
+      <h2 id="stafferBridgeTitle">Your Staffer on this device</h2>
+      <p class="staffer-bridge__lead">Set up your boards and profile, or start a clean run — without hunting the terminal first.</p>
+      <p class="tiny staffer-bridge__trust">Runs only on your machine. Hosted UCDC never touches your Staffer project folder.</p>
+      <p class="tiny staffer-bridge__status" id="stafferLocalHint">Checking what’s possible on this page…</p>
+      <div class="staffer-actions" id="stafferLocalButtons">
+        <button type="button" class="secondary" id="btnStafferGet" disabled title="Clone or update Staffer from git">GET Staffer</button>
+        <button type="button" class="secondary" id="btnStafferSetup" disabled title="Runs python run_config.py">CONFIGURE</button>
+        <button type="button" id="btnStafferExecute" disabled title="Runs python main.py --fresh">ACTIVATE</button>
+      </div>
+      <details class="staffer-bridge__details">
+        <summary>What each button does</summary>
+        <ul class="tiny staffer-bridge__list">
+          <li><strong>GET Staffer</strong> — clone (or pull) your Staffer repo from <code>STAFFER_GIT_URL</code> into <code>STAFFER_LOCAL_REPO</code>.</li>
+          <li><strong>CONFIGURE</strong> — run your config step (<code>python run_config.py</code>).</li>
+          <li><strong>ACTIVATE</strong> — start Staffer fresh (<code>python main.py --fresh</code>).</li>
+        </ul>
+        <p class="tiny">Needs <code>UCDC_ENABLE_STAFFER_LOCAL_BRIDGE</code>, <code>STAFFER_GIT_URL</code>, and <code>STAFFER_LOCAL_REPO</code> in your environment. See README.</p>
+      </details>
+      <div id="stafferLocalSummary" class="staffer-result" hidden></div>
+      <pre class="staffer-out" id="stafferLocalOut" hidden></pre>
+    </section>
+
+    <section class="panel" id="agentsSection">
+      <h2 class="h2">Agents to deploy</h2>
+      <p class="section-lead">The Staffer and Miner — same permission flow from Mission Control.</p>
+      <div class="agents-deploy" id="agentGrid"></div>
+      <div class="warning">
+        Start with <strong>The Staffer</strong> for job applications that match your saved profile. <strong>Miner</strong> earns from shared compute — same permission flow.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Scoreboard</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="label">Setup</div><div class="value" id="kpiInstalls">0</div><div class="delta">This device</div></div>
+        <div class="kpi"><div class="label">Permissions</div><div class="value" id="kpiPacts">0</div><div class="delta">Green lights</div></div>
+        <div class="kpi"><div class="label">Sends</div><div class="value" id="kpiMissions">0</div><div class="delta">Queued</div></div>
+        <div class="kpi"><div class="label">Pauses</div><div class="value" id="kpiKills">0</div><div class="delta">You stopped it</div></div>
+      </div>
+      <div class="row">
+        <button type="button" class="secondary" id="btnRefreshHealth">Check connections</button>
+      </div>
+      <p class="tiny" id="systemHealth">Connections: checking…</p>
+    </section>
+
+    <div class="layout-2">
+      <section class="panel">
+        <h2>Agent pulse</h2>
+        <p class="section-lead">Live status for agents on this session.</p>
+        <div class="pulse-list" id="pulseList"></div>
+      </section>
+      <section class="panel">
+        <h2>Earnings &amp; outcomes</h2>
+        <p class="section-lead">Gamified snapshot — real payouts connect in a later sprint.</p>
+        <div id="outcomesPanel"></div>
+      </section>
+    </div>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>Behind the scenes</h2>
+        <p class="tiny">URLs fill automatically when this page is served from your local stack.</p>
+        <details class="advanced">
+          <summary>Advanced — connection URLs</summary>
+          <label style="margin-top:0.5rem">Permission service
+            <input type="url" id="consentBase" placeholder="http://127.0.0.1:8001" />
+          </label>
+          <label>Send queue service
+            <input type="url" id="orchBase" placeholder="http://127.0.0.1:8002" />
+          </label>
+          <p class="tiny">Saved in this browser only.</p>
+        </details>
+      </section>
+    </div>
+
+    <section class="panel" id="missionPanels">
+      <h2>Your 4-step flow · steps 3–4</h2>
+      <div class="steps">
+        <div class="step active" id="agStep3">3. Launch mission</div>
+        <div class="step" id="agStep4">4. Proof Ledger + Kill Switch</div>
+      </div>
+      <p class="tiny" id="sessionAgentLine"></p>
+      <label>Your nickname <input type="text" id="userId" readonly /></label>
+      <label>Active agent id <input type="text" id="agentId" readonly /></label>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <h2>Step 3 · Launch mission</h2>
+        <p class="tiny">Optional payload (usually <code>{}</code>).</p>
+        <label>Extra details (JSON) <textarea id="jobData">{}</textarea></label>
+        <div class="row">
+          <button type="button" id="btnJob" disabled>Launch mission</button>
+        </div>
+        <pre id="outJob" hidden></pre>
+      </section>
+      <section class="panel">
+        <h2>Step 4 · Proof Ledger &amp; Kill Switch</h2>
+        <div class="row">
+          <button type="button" class="danger" id="btnRevoke" disabled>Kill Switch: stop future missions</button>
+          <button type="button" class="secondary" id="btnEvents" disabled>Proof Ledger: refresh events</button>
+        </div>
+        <p class="tiny">Kill Switch stops future runs for this permission. It does not undo jobs already accepted.</p>
+        <pre id="outRevoke" hidden></pre>
+        <pre id="outEvents" hidden></pre>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Live feed</h2>
+      <div class="feed" id="eventFeed"></div>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    let agents = [
+      {
+        id: "example-agent",
+        name: "The Staffer",
+        featured: true,
+        persona: "Light · professional",
+        desc: "Applies to jobs and gigs that match your saved profile — only after you approve here.",
+        active: false,
+        theme: "staffer",
+        portrait: "assets/agents/staffer-agent.png",
+      },
+      {
+        id: "compute-earner",
+        name: "Miner",
+        featured: false,
+        persona: "Compute & earn",
+        desc: "Turns spare compute into earnings — with limits you set and clear stops.",
+        active: false,
+        theme: "miner",
+        portrait: "assets/agents/miner-agent.png",
+      },
+    ];
+
+    const EVENT_LABELS = {
+      "install.completed": "You’re in",
+      "trust_pact.viewed": "Agent picked",
+      "trust_pact.approval_checkpoint_seen": "You ticked the box",
+      "trust_pact.activated": "Permission on",
+      "mission.launch_requested": "Send queued",
+      "mission.failed": "Send didn’t go through",
+      "mission.launch_accepted": "Send accepted",
+      "kill_switch.triggered": "You paused everything",
+      "proof_ledger.event_recorded": "Activity refreshed",
+      "service.health_snapshot": "Connection check",
+    };
+
+    const state = {
+      consentId: null,
+      consentToken: null,
+      stafferApprovalId: null,
+      resources: [],
+      stats: {
+        installs: 1,
+        trustPacts: 0,
+        missions: 0,
+        kills: 0,
+      },
+      events: [],
+    };
+
+    const SESSION_KEY = "ucdc_mc_session";
+    const AGENTS_KEY = "ucdc_mc_agents";
+
+    function persistState() {
+      localStorage.setItem("ucdc_mc_stats", JSON.stringify(state.stats));
+      localStorage.setItem("ucdc_mc_events", JSON.stringify(state.events));
+    }
+
+    function loadState() {
+      try {
+        const stats = JSON.parse(localStorage.getItem("ucdc_mc_stats") || "{}");
+        const events = JSON.parse(localStorage.getItem("ucdc_mc_events") || "[]");
+        state.stats = { ...state.stats, ...stats };
+        if (Array.isArray(events)) {
+          state.events = events.slice(0, 30);
+        }
+      } catch (_) {}
+    }
+
+    function loadAgentsFromStorage() {
+      try {
+        const raw = localStorage.getItem(AGENTS_KEY);
+        if (!raw) return;
+        const snaps = JSON.parse(raw);
+        if (!Array.isArray(snaps)) return;
+        snaps.forEach((snap) => {
+          const a = agents.find((x) => x.id === snap.id);
+          if (a) {
+            if (typeof snap.active === "boolean") a.active = snap.active;
+          }
+        });
+      } catch (_) {}
+    }
+
+    function loadSession() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return false;
+        const s = JSON.parse(raw);
+        state.consentId = s.consentId;
+        state.consentToken = s.consentToken;
+        state.stafferApprovalId = s.stafferApprovalId || null;
+        state.resources = Array.isArray(s.resources) ? s.resources : [];
+        if ($("userId")) $("userId").value = s.userId || "";
+        if ($("agentId")) $("agentId").value = s.agentId || "";
+        return !!state.consentToken;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function formatInr(n) {
+      try {
+        return "₹" + Number(n).toLocaleString("en-IN");
+      } catch (_) {
+        return "₹" + n;
+      }
+    }
+
+    function appendEvent(type, details) {
+      const stamp = new Date().toLocaleTimeString();
+      state.events.unshift({ stamp, type, details });
+      state.events = state.events.slice(0, 30);
+      persistState();
+      renderFeed();
+    }
+
+    function labelForEventType(type) {
+      return EVENT_LABELS[type] || type.replace(/\./g, " · ");
+    }
+
+    function renderFeed() {
+      const root = $("eventFeed");
+      if (!root) return;
+      if (!state.events.length) {
+        root.innerHTML = '<div class="feed-item">Nothing here yet — deploy <strong>The Staffer</strong> and allow permission to see your first win.</div>';
+        return;
+      }
+      root.innerHTML = state.events.map((e) => (
+        '<div class="feed-item"><strong>' + e.stamp + "</strong> · " + labelForEventType(e.type) + "<br><span class=\"tiny\">" + e.details + "</span></div>"
+      )).join("");
+    }
+
+    function setAgStep(n) {
+      ["agStep3", "agStep4"].forEach((id, idx) => {
+        const el = $(id);
+        if (el) el.classList.toggle("active", idx < n);
+      });
+    }
+
+    function setBadge(el, on) {
+      if (!el) return;
+      el.classList.toggle("unlocked", !!on);
+    }
+
+    function updateBadgesAndHint() {
+      const s = state.stats;
+      setBadge($("badgeSetup"), s.installs >= 1);
+      setBadge($("badgeAllow"), s.trustPacts >= 1);
+      setBadge($("badgeSend"), s.missions >= 1);
+      setBadge($("badgePause"), s.kills >= 1);
+      const nw = $("nextWin");
+      if (!nw) return;
+      if (s.trustPacts < 1) {
+        nw.textContent = "Complete a Trust Pact on Mission Control home first.";
+      } else if (s.missions < 1) {
+        nw.textContent = "Next win: tap Launch mission — unlock “First send”.";
+      } else if (s.kills < 1) {
+        nw.textContent = "Optional: try Kill Switch to unlock “You hit pause”.";
+      } else {
+        nw.textContent = "You’ve cleared the board. Come back anytime.";
+      }
+    }
+
+    function updateHeroStats() {
+      const s = state.stats;
+      const elI = $("statKpiInstalls");
+      const elM = $("statKpiMissions");
+      const elR = $("statKpiRewards");
+      if (elI) elI.textContent = String(s.installs);
+      if (elM) elM.textContent = String(s.missions);
+      if (elR) elR.textContent = formatInr(s.missions * 250);
+    }
+
+    function updateKpis() {
+      $("kpiInstalls").textContent = String(state.stats.installs);
+      $("kpiPacts").textContent = String(state.stats.trustPacts);
+      $("kpiMissions").textContent = String(state.stats.missions);
+      $("kpiKills").textContent = String(state.stats.kills);
+      updateHeroStats();
+      updateBadgesAndHint();
+      updatePulseAndOutcomes();
+      persistState();
+    }
+
+    function progressForAgent(agent) {
+      if (!agent.active) return 8;
+      if (state.stats.missions > 0) return 72;
+      return 38;
+    }
+
+    function pulseLabel(agent) {
+      if (!agent.active) return "Idle · deploy to start";
+      if (state.stats.missions > 0) return "Task in flight";
+      return "Permission on · ready to send";
+    }
+
+    function updatePulseAndOutcomes() {
+      const pulse = $("pulseList");
+      const out = $("outcomesPanel");
+      if (!pulse || !out) return;
+      pulse.innerHTML = agents.map((a) => {
+        const pct = progressForAgent(a);
+        return (
+          '<div>' +
+          '<div class="pulse-row"><span>' + a.name + "</span><span class=\"tiny\">" + pulseLabel(a) + "</span></div>" +
+          '<div class="pulse-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
+          "</div>"
+        );
+      }).join("");
+      const demo = state.stats.missions * 250;
+      out.innerHTML =
+        '<div class="outcome-row"><span class="outcome-row__icon" aria-hidden="true">💼</span><div><strong>The Staffer</strong><br><span class="tiny">' +
+        (state.stats.missions > 0 ? state.stats.missions + " task(s) queued" : "Waiting for first send") +
+        "</span></div></div>" +
+        '<div class="outcome-row"><span class="outcome-row__icon" aria-hidden="true">⛏️</span><div><strong>Miner</strong><br><span class="tiny">Compute track · demo "' +
+        formatInr(demo) +
+        '"</span></div></div>';
+    }
+
+    function renderAgents() {
+      const root = $("agentGrid");
+      root.innerHTML = agents.map((agent) => {
+        const statusClass = agent.active ? "status live" : "status";
+        const statusText = agent.active ? "Live on device" : "Ready to deploy";
+        const featured = agent.featured ? '<span class="agent-card__tag">Featured</span>' : "";
+        const portrait = agent.portrait
+          ? '<img class="agent-card__photo" src="' +
+            agent.portrait +
+            '" alt="' +
+            agent.name +
+            ' portrait" loading="lazy" width="400" height="400" />'
+          : "";
+        const note = agent.active
+          ? '<p class="tiny">Permission active — use Launch mission below.</p>'
+          : '<p class="tiny">Need this agent? Complete a Trust Pact for it on <a href="index.html">Mission Control</a>.</p>';
+        return (
+          '<article class="agent-card agent-card--' +
+          agent.theme +
+          '">' +
+          '<div class="agent-card__visual">' +
+          portrait +
+          "</div>" +
+          '<div class="agent-card__body">' +
+          featured +
+          '<span class="' +
+          statusClass +
+          '">' +
+          statusText +
+          "</span>" +
+          "<h3>" +
+          agent.name +
+          "</h3>" +
+          '<p class="agent-card__persona">' +
+          agent.persona +
+          "</p>" +
+          "<p>" +
+          agent.desc +
+          "</p>" +
+          note +
+          "</div></article>"
+        );
+      }).join("");
+    }
+
+    function parseResources() {
+      return state.resources.length ? state.resources : [];
+    }
+
+    function getStafferAgentId() {
+      const featured = agents.find((a) => a.featured);
+      return featured ? featured.id : "the-staffer";
+    }
+
+    function isStafferAgent(agentId) {
+      const normalized = (agentId || "").trim();
+      return normalized === getStafferAgentId() || normalized === "the-staffer";
+    }
+
+    async function createStafferApprovalCheckpoint(agentId) {
+      if (!isStafferAgent(agentId) || !state.consentToken) {
+        return null;
+      }
+      const base = $("orchBase").value.replace(/\/$/, "");
+      const r = await fetch(base + "/staffer/approvals/checkpoint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          consent_token: state.consentToken,
+          approved: true,
+          reason: "UI approval checkpoint",
+        }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        const detail = data.detail ? JSON.stringify(data.detail) : r.statusText;
+        throw new Error("Approval checkpoint failed: " + detail);
+      }
+      state.stafferApprovalId = data.approval_id || null;
+      try {
+        const prev = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+        prev.stafferApprovalId = state.stafferApprovalId;
+        localStorage.setItem(SESSION_KEY, JSON.stringify(prev));
+      } catch (_) {}
+      appendEvent("trust_pact.approval_checkpoint_seen", "Approval checkpoint recorded for Staffer.");
+      return state.stafferApprovalId;
+    }
+
+    async function loadBasesFromEnv() {
+      let cfg = {};
+      try {
+        const r = await fetch("/public-config");
+        if (r.ok) cfg = await r.json();
+      } catch (_) {}
+      const staffer = agents.find((a) => a.featured);
+      if (staffer && cfg.default_agent_id) {
+        staffer.id = String(cfg.default_agent_id);
+      }
+      const c = localStorage.getItem("ucdc_consent_base");
+      const o = localStorage.getItem("ucdc_orch_base");
+      $("consentBase").value = c || cfg.consent_base_url || "http://127.0.0.1:8001";
+      $("orchBase").value = o || cfg.orchestrator_base_url || "http://127.0.0.1:8002";
+    }
+
+    function saveBases() {
+      localStorage.setItem("ucdc_consent_base", $("consentBase").value.trim());
+      localStorage.setItem("ucdc_orch_base", $("orchBase").value.trim());
+    }
+
+    function showPre(id, obj) {
+      const el = $(id);
+      el.hidden = false;
+      el.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+    }
+
+    async function launchMission() {
+      saveBases();
+      let extra = {};
+      try {
+        extra = JSON.parse($("jobData").value || "{}");
+      } catch (e) {
+        showPre("outJob", "Extra details need valid JSON. Tip: use {} if unsure. (" + e.message + ")");
+        return;
+      }
+      const manifest = {
+        agent_id: $("agentId").value.trim(),
+        resources: parseResources(),
+        data: extra,
+      };
+      const base = $("orchBase").value.replace(/\/$/, "");
+      appendEvent("mission.launch_requested", "Queueing a send for " + manifest.agent_id + ".");
+      const payload = { consent_token: state.consentToken, job_manifest: manifest };
+      if (isStafferAgent(manifest.agent_id)) {
+        if (!state.stafferApprovalId) {
+          await createStafferApprovalCheckpoint(manifest.agent_id);
+        }
+        if (state.stafferApprovalId) {
+          payload.staffer_approval_id = state.stafferApprovalId;
+        }
+      }
+      let r = await fetch(base + "/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      let data = await r.json().catch(() => ({}));
+      if (r.status === 409 && isStafferAgent(manifest.agent_id)) {
+        state.stafferApprovalId = null;
+        const fresh = await createStafferApprovalCheckpoint(manifest.agent_id);
+        if (fresh) {
+          payload.staffer_approval_id = fresh;
+          r = await fetch(base + "/jobs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          data = await r.json().catch(() => ({}));
+        }
+      }
+      if (!r.ok && r.status !== 202) {
+        appendEvent("mission.failed", "Couldn’t queue send for " + manifest.agent_id + ".");
+        if (r.status === 403 && String(data.detail || "").toLowerCase().includes("approval")) {
+          throw new Error("Staffer approval is required. Activate Trust Pact again, then retry mission launch.");
+        }
+        throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
+      }
+      if (isStafferAgent(manifest.agent_id)) {
+        state.stafferApprovalId = null;
+      }
+      state.stats.missions += 1;
+      updateKpis();
+      showPre("outJob", { ...data, httpStatus: r.status });
+      appendEvent("mission.launch_accepted", "Send accepted for " + manifest.agent_id + " (status " + r.status + ").");
+      setAgStep(2);
+    }
+
+    async function killSwitch() {
+      saveBases();
+      const base = $("consentBase").value.replace(/\/$/, "");
+      const r = await fetch(base + "/consents/" + encodeURIComponent(state.consentId) + "/revoke", { method: "POST" });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
+      state.stats.kills += 1;
+      updateKpis();
+      showPre("outRevoke", data);
+      appendEvent("kill_switch.triggered", "All sends paused for this permission (" + state.consentId + ").");
+    }
+
+    async function refreshProofLedger() {
+      saveBases();
+      const base = $("consentBase").value.replace(/\/$/, "");
+      const r = await fetch(base + "/consents/" + encodeURIComponent(state.consentId) + "/events");
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.detail ? JSON.stringify(data.detail) : r.statusText);
+      showPre("outEvents", data);
+      const count = Array.isArray(data) ? data.length : 0;
+      appendEvent("proof_ledger.event_recorded", "Loaded " + count + " past event(s) from the log.");
+    }
+
+    async function refreshHealth() {
+      saveBases();
+      const consentBase = $("consentBase").value.replace(/\/$/, "");
+      const orchBase = $("orchBase").value.replace(/\/$/, "");
+      let consent = "down";
+      let orch = "down";
+      try {
+        const r1 = await fetch(consentBase + "/health");
+        if (r1.ok) consent = "ok";
+      } catch (_) {}
+      try {
+        const r2 = await fetch(orchBase + "/health");
+        if (r2.ok) orch = "ok";
+      } catch (_) {}
+      const line =
+        "Permission service: " + (consent === "ok" ? "connected" : "offline") +
+        " · Send queue: " + (orch === "ok" ? "connected" : "offline");
+      $("systemHealth").textContent = line;
+      appendEvent("service.health_snapshot", line);
+    }
+
+    ["consentBase", "orchBase"].forEach((id) => $(id).addEventListener("change", saveBases));
+    $("btnJob").addEventListener("click", () => launchMission().catch((e) => showPre("outJob", String(e.message || e))));
+    $("btnRevoke").addEventListener("click", () => killSwitch().catch((e) => showPre("outRevoke", String(e.message || e))));
+    $("btnEvents").addEventListener("click", () => refreshProofLedger().catch((e) => showPre("outEvents", String(e.message || e))));
+    $("btnRefreshHealth").addEventListener("click", () => refreshHealth().catch((e) => $("systemHealth").textContent = String(e.message || e)));
+
+    async function refreshStafferLocalUi() {
+      const hint = $("stafferLocalHint");
+      try {
+        const r = await fetch("/local-staffer/status");
+        if (!r.ok) throw new Error(r.statusText);
+        const s = await r.json();
+        hint.textContent = s.enabled
+          ? s.message + (s.repo_path ? " · " + s.repo_path : "")
+          : s.message;
+        const on = !!s.enabled;
+        $("btnStafferGet").disabled = !on;
+        $("btnStafferSetup").disabled = !on;
+        $("btnStafferExecute").disabled = !on;
+      } catch (_) {
+        hint.textContent =
+          "Open this page from your machine’s consent URL (for example http://127.0.0.1:8001/ui/) so these actions can reach your Staffer folder.";
+        $("btnStafferGet").disabled = true;
+        $("btnStafferSetup").disabled = true;
+        $("btnStafferExecute").disabled = true;
+      }
+    }
+
+    function showStafferOut(data) {
+      const pre = $("stafferLocalOut");
+      const sum = $("stafferLocalSummary");
+      if (data == null) {
+        sum.hidden = true;
+        pre.hidden = true;
+        return;
+      }
+      if (typeof data !== "object") {
+        sum.hidden = true;
+        pre.hidden = false;
+        pre.textContent = String(data);
+        return;
+      }
+      if (data.httpStatus != null && data.detail != null) {
+        sum.hidden = false;
+        sum.className = "staffer-result staffer-result--err";
+        const d = data.detail;
+        sum.textContent =
+          "Couldn’t run that — " + (typeof d === "string" ? d : "check the server or your .env.");
+        pre.hidden = false;
+        pre.textContent = JSON.stringify(data, null, 2);
+        return;
+      }
+      sum.hidden = false;
+      sum.className = "staffer-result " + (data.ok ? "staffer-result--ok" : "staffer-result--err");
+      sum.textContent = data.ok
+        ? "That step finished. Move on or tap the next action."
+        : "That command reported an error — read the lines below.";
+      pre.hidden = false;
+      pre.textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function postStafferAction(path, label) {
+      const hint = $("stafferLocalHint");
+      const prev = hint.textContent;
+      $("stafferLocalSummary").hidden = true;
+      $("stafferLocalOut").hidden = true;
+      hint.textContent = "Working on " + label + "…";
+      try {
+        const r = await fetch(path, { method: "POST" });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          showStafferOut({ httpStatus: r.status, detail: data.detail || r.statusText });
+          hint.textContent = prev;
+          await refreshStafferLocalUi();
+          return;
+        }
+        showStafferOut(data);
+        hint.textContent = prev;
+      } catch (e) {
+        showStafferOut(String(e.message || e));
+        hint.textContent = prev;
+      }
+      await refreshStafferLocalUi();
+    }
+
+    $("btnStafferGet").addEventListener("click", () => postStafferAction("/local-staffer/get", "GET Staffer"));
+    $("btnStafferSetup").addEventListener("click", () => postStafferAction("/local-staffer/setup", "CONFIGURE"));
+    $("btnStafferExecute").addEventListener("click", () => postStafferAction("/local-staffer/execute", "ACTIVATE"));
+
+    (async function initAgentsWorkspace() {
+      await loadBasesFromEnv();
+      loadState();
+      loadAgentsFromStorage();
+      const ok = loadSession();
+      const gate = $("sessionGate");
+      if (!ok) {
+        gate.hidden = false;
+        $("btnJob").disabled = true;
+        $("btnRevoke").disabled = true;
+        $("btnEvents").disabled = true;
+      } else {
+        gate.hidden = true;
+        $("btnJob").disabled = false;
+        $("btnRevoke").disabled = false;
+        $("btnEvents").disabled = false;
+        const line = $("sessionAgentLine");
+        if (line) {
+          line.textContent = "Session loaded — active agent " + ($("agentId").value || "(unknown)") + ".";
+        }
+      }
+      renderAgents();
+      updateKpis();
+      renderFeed();
+      if (!state.events.length) {
+        appendEvent("install.completed", "Agents workspace ready.");
+      }
+      await refreshHealth();
+      await refreshStafferLocalUi();
+      setAgStep(1);
+    })();
+  </script>
+</body>
+</html>
